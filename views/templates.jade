@@ -5,6 +5,8 @@ script#zpool-tmpl(type="text/x-jquery-tmpl")
       .content
         h1 ${name}
         h2 ${status}
+      footer
+        code zpool status
   #arrays
   #filesystems
 
@@ -15,7 +17,8 @@ script#diskarray-tmpl(type="text/x-jquery-tmpl")
         h1 ${name} <small>${type}</small>
       .content
         .disks
-      footer &nbsp;
+      footer
+        code zpool status
 
 script#disk-tmpl(type="text/x-jquery-tmpl")
   .disk ${deviceId}
@@ -28,7 +31,8 @@ script#zfs-capacity-tmpl(type="text/x-jquery-tmpl")
         h1 Pool Capacity
       .content
         span ${free}/${allocated} ${size} total
-      footer &nbsp;
+      footer 
+        code zpool list
 
 script#zfs-distribution-tmpl(type="text/x-jquery-tmpl")
   #zfs-distribution.widget.c2.r2
@@ -36,7 +40,8 @@ script#zfs-distribution-tmpl(type="text/x-jquery-tmpl")
       header
         h1 Data Distribution
       .content
-      footer &nbsp;
+      footer
+        code zfs list
 
 script#zfs-tmpl(type="text/x-jquery-tmpl")
   div

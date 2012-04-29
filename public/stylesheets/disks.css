@@ -1,0 +1,13 @@
+/* line 1, ../../src/public/stylesheets/disks.sass */
+.disks {
+  height: 100%;
+}
+
+/* line 4, ../../src/public/stylesheets/disks.sass */
+.disk {
+  height: 25%;
+  font-size: 40px;
+  padding: 0.5em;
+  outline: 2px solid #202223;
+  text-align: center;
+}

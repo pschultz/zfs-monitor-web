@@ -71,7 +71,7 @@ header {
 h1 {
   box-sizing: padding-box;
   margin: 0;
-  padding: 0.1em 5px;
+  padding: 0.2em 5px 0.1em;
   font-size: 20px;
 }
 
@@ -92,4 +92,6 @@ h1 {
 footer {
   height: 30px;
   overflow: hidden;
+  font-size: 16px;
+  padding: 0 5px;
 }
