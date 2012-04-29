@@ -1,0 +1,44 @@
+script#zpool-tmpl(type="text/x-jquery-tmpl")
+  #pool-caption.widget.head.r1
+    article
+      header &nbsp;
+      .content
+        h1 ${name}
+        h2 ${status}
+  #arrays
+  #filesystems
+
+script#diskarray-tmpl(type="text/x-jquery-tmpl")
+  .diskarray.widget.c1.r1
+    article
+      header
+        h1 ${name} <small>${type}</small>
+      .content
+        .disks
+      footer &nbsp;
+
+script#disk-tmpl(type="text/x-jquery-tmpl")
+  .disk ${deviceId}
+
+script#zfs-capacity-tmpl(type="text/x-jquery-tmpl")
+  .widget.head.r2
+  #zfs-capacity.widget.c2.r2
+    article
+      header
+        h1 Pool Capacity
+      .content
+        span ${free}/${allocated} ${size} total
+      footer &nbsp;
+
+script#zfs-distribution-tmpl(type="text/x-jquery-tmpl")
+  #zfs-distribution.widget.c2.r2
+    article
+      header
+        h1 Data Distribution
+      .content
+      footer &nbsp;
+
+script#zfs-tmpl(type="text/x-jquery-tmpl")
+  div
+    strong ${name}
+    ${free}/${allocated} ${size} total

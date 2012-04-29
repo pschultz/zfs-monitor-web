@@ -1,0 +1,39 @@
+/* line 1, ../../src/public/stylesheets/colors.sass */
+body {
+  background: #111314 none;
+  color: #d3d4d4;
+  font: 400 20px/24px Arial, Tahoma, Geneva, sans-serif;
+}
+
+/* line 5, ../../src/public/stylesheets/colors.sass */
+article {
+  box-shadow: 0 0 10px 0 black;
+  background: #202223 none;
+}
+
+/* line 8, ../../src/public/stylesheets/colors.sass */
+header {
+  font-size: 20px;
+}
+
+/* line 10, ../../src/public/stylesheets/colors.sass */
+h1, h2, h3 {
+  text-shadow: 0 -1px 1px black;
+  color: #707275;
+}
+
+/* line 13, ../../src/public/stylesheets/colors.sass */
+header, .content {
+  border-bottom: 1px solid #151617;
+}
+
+/* line 15, ../../src/public/stylesheets/colors.sass */
+.content, footer {
+  border-top: 1px solid #303334;
+}
+
+/* line 17, ../../src/public/stylesheets/colors.sass */
+.ONLINE {
+  background: #77ab13;
+  padding: 3px;
+}

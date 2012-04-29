@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+[ -z "$1" ] && echo "Usage: $(basename $0) MODULENAME" >&2 && exit 1
+
+CC_NAME=$1
+LC_NAME=$(echo "${CC_NAME}" | tr '[:upper:]' '[:lower:]')
+
+cd $(dirname "${0}")
+
+[ "${CC_NAME}" == "${LC_NAME}" ] && echo "The module should be specified in camel case, e. g. 'FoobarBaz'" >&2 && exit 2
+
+[ -r "${LC_NAME}" ] && echo "Module ${CC_NAME} already exists" >&2 && exit 3
+
+cp -r template "${LC_NAME}"
+perl -pi -e "s/%ccname%/${CC_NAME}/g" "${LC_NAME}"/*
+perl -pi -e "s/%lcname%/${LC_NAME}/g" "${LC_NAME}"/*
+coffee -c "${LC_NAME}"/*.coffee

@@ -1,6 +1,19 @@
-!!!
+!!! 5
 html
   head
     title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body!= body
+ 
+    link(rel='stylesheet', href='/stylesheets/layout.css')
+    link(rel='stylesheet', href='/stylesheets/colors.css')
+
+    script(src='/socket.io/socket.io.js')
+    script(src='/javascripts/lib/jquery-1.7.2.min.js')
+    script(src='/javascripts/lib/jquery.tmpl.min.js')
+    script(src='/javascripts/lib/underscore-min.js')
+    script(src='/javascripts/lib/backbone-min.js')
+    script(src='/javascripts/lib/require.js', data-main="/javascripts/app")
+
+
+  body
+    != body
+    include templates

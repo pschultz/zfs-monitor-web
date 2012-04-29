@@ -1,0 +1,95 @@
+/* line 11, ../../src/public/stylesheets/layout.sass */
+* {
+  box-sizing: border-box;
+}
+
+/* line 13, ../../src/public/stylesheets/layout.sass */
+html {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+/* line 18, ../../src/public/stylesheets/layout.sass */
+body {
+  padding: 0;
+  margin: 0 auto;
+  width: 1680px;
+  height: 1050px;
+  overflow: hidden;
+}
+
+/* line 24, ../../src/public/stylesheets/layout.sass */
+.c1 {
+  width: 335px;
+}
+
+/* line 26, ../../src/public/stylesheets/layout.sass */
+.r1 {
+  height: 335px;
+}
+
+/* line 28, ../../src/public/stylesheets/layout.sass */
+.c2 {
+  width: 670px;
+}
+
+/* line 30, ../../src/public/stylesheets/layout.sass */
+.r2 {
+  height: 670px;
+}
+
+/* line 32, ../../src/public/stylesheets/layout.sass */
+.head {
+  width: 268px;
+}
+
+/* line 34, ../../src/public/stylesheets/layout.sass */
+.widget {
+  float: left;
+  padding: 5px;
+  margin: 0;
+}
+
+/* line 38, ../../src/public/stylesheets/layout.sass */
+article {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* line 44, ../../src/public/stylesheets/layout.sass */
+header {
+  height: 30px;
+  overflow: hidden;
+}
+
+/* line 47, ../../src/public/stylesheets/layout.sass */
+h1 {
+  box-sizing: padding-box;
+  margin: 0;
+  padding: 0.1em 5px;
+  font-size: 20px;
+}
+
+/* line 52, ../../src/public/stylesheets/layout.sass */
+.content {
+  padding: 5px;
+  height: 265px;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* line 57, ../../src/public/stylesheets/layout.sass */
+.r2 .content {
+  height: 600px;
+}
+
+/* line 59, ../../src/public/stylesheets/layout.sass */
+footer {
+  height: 30px;
+  overflow: hidden;
+}
