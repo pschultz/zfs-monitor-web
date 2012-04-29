@@ -1,0 +1,24 @@
+{
+    "name": "zfs-monitor"
+  , "description": "Webbased dashboard style monitoring for ZFS and zpools"
+  , "author": {
+      "name": "Peter Schultz"
+    , "email": "schultz.peter@hotmail.com"
+  }
+  , "contributors": [
+    {
+        "name": "Peter Schultz"
+      , "email": "schultz.peter@hotmail.com"
+    }
+  ]
+  , "version": "1.0.0"
+  , "private": true
+  , "dependencies": {
+      "express": ">= 2.5.8"
+    , "sass": ">= 0.0.1"
+    , "jade": ">= 0.0.1"
+  }
+  , "engines": {
+    "node": ">= 0.6.0 < 0.7.0"
+  }
+}
