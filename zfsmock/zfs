@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+function list() {
+    cat <<EOS
+NAME                                 USED  AVAIL  REFER  MOUNTPOINT
+pool                                 138K  17.1G  43.4K  /pool
+rpool                               7.18G   102G  45.5K  /rpool
+rpool/ROOT                          5.40G   102G    31K  legacy
+rpool/ROOT/2012-03-updated-install  5.39G   102G  4.65G  /
+rpool/ROOT/openindiana              7.64M   102G  1.86G  /
+rpool/dump                           884M   102G   884M  -
+rpool/export                         101K   102G    32K  /export
+rpool/export/home                     69K   102G    32K  /export/home
+rpool/export/home/pschultz            37K   102G    37K  /export/home/pschultz
+rpool/swap                           940M   103G   133M  -
+tank                                2.87T  2.05T    24K  /tank
+tank/exports                        2.55T  2.05T   261G  /tank/exports
+tank/exports/Audio                  23.4G  2.05T    34K  /tank/exports/Audio
+tank/exports/Audio/Books            14.0G  2.05T  14.0G  /tank/exports/Audio/Books
+tank/exports/Audio/Music            9.44G  2.05T  9.44G  /tank/exports/Audio/Music
+tank/exports/Downloads               418G  2.05T   281G  /tank/exports/Downloads
+tank/exports/Games                   416G  2.05T   416G  /tank/exports/Games
+tank/exports/Video                  1.45T  2.05T    24K  /tank/exports/Video
+tank/exports/Video/Movies            839G  2.05T   797G  /tank/exports/Video/Movies
+tank/exports/Video/TvShows           650G  2.05T   648G  /tank/exports/Video/TvShows
+tank/exports/pxe                    2.07G  2.05T  2.07G  /tank/exports/pxe
+tank/homes                           329G  2.05T    26K  /tank/homes
+tank/homes/knox                     44.1M  2.05T  44.1M  /tank/homes/knox
+tank/homes/knox.old                  328G  2.05T   328G  /tank/homes/knox.old
+tank/homes/pschultz                 11.2M  2.05T  11.2M  /tank/homes/pschultz
+tank/homes/xbmc                      531M  2.05T   531M  /tank/homes/xbmc
+EOS
+}
+
+[ -z "$1" ] && echo "missing command" >&2 && exit 1;
+
+case "$1" in
+    status)
+        status
+        ;;
+    list)
+        list
+        ;;
+    *)
+        echo "unrecognized command '$1'" >&2
+        exit 2
+        ;;
+esac
