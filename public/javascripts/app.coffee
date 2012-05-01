@@ -115,3 +115,7 @@ define [
     type: 'scrub'
     eta: 182
     progress: .99
+
+  socket = io.connect '/'
+  socket.on 'update:pool', (data) ->
+    console.log data

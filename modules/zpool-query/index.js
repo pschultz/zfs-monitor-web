@@ -40,11 +40,14 @@ Query = (function(_super) {
 
   function Query() {
     var self;
-    this.keepItComin();
+    this.slowDown();
     self = this;
     setInterval(function() {
       return self.killStalledProcesses();
     }, 5000);
+    this.on('analyzed', function() {
+      return self.start();
+    });
   }
 
   Query.prototype.start = function() {
@@ -53,13 +56,15 @@ Query = (function(_super) {
     timeSinceLastRun = now - lastRun;
     self = this;
     startedToFast = timeSinceLastRun < this.spinningTreshold[0];
-    if (startedToFast && this.deferTimer === 0) {
-      deferFor = this.spinningTreshold[0] - timeSinceLastRun;
-      console.log("defering zpool queries for " + deferFor + " ms");
-      this.deferTimer = setTimeout(function() {
-        self.deferTimer = 0;
-        return self.query();
-      }, deferFor);
+    if (startedToFast) {
+      if (this.deferTimer === 0) {
+        deferFor = this.spinningTreshold[0] - timeSinceLastRun;
+        console.log("defering zpool queries for " + deferFor + " ms");
+        this.deferTimer = setTimeout(function() {
+          self.deferTimer = 0;
+          return self.start();
+        }, deferFor);
+      }
       return;
     }
     running = true;

@@ -1,4 +1,4 @@
-var app, express, io, query, routes;
+var app, clients, express, io, query, routes;
 
 express = require('express');
 
@@ -7,6 +7,8 @@ routes = require('./routes');
 app = module.exports = express.createServer();
 
 io = require('socket.io').listen(app);
+
+io.set('log level', 1);
 
 app.configure(function() {
   app.set('views', __dirname + '/views');
@@ -39,30 +41,21 @@ app.listen(3000, function() {
 
 query = new (require('./modules/zpool-query'));
 
-query.on('analyzed', function(analysis) {
-  var p, _i, _len, _ref, _results;
-  _ref = analysis.pools;
-  _results = [];
-  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-    p = _ref[_i];
-    _results.push(console.log(p));
-  }
-  return _results;
+query.on('analyzed', function(zpools) {
+  return io.sockets.emit('update:pool', zpools);
 });
 
-query.start();
+clients = {};
 
-/*
-query.on 'analyzed', (zpools) ->
-  io.broadcast update: zpools
-
-clients = {}
-
-io.sockets.on 'connection', (socket) ->
-  clients[socket.id] = socket
-  query.keepItComin()
-
-  socket.on 'disconnect', ->
-    delete clients[this.id]
-    query.slowDown() if not Object.keys(clients).length
-*/
+io.sockets.on('connection', function(socket) {
+  clients[socket.id] = socket;
+  query.keepItComin();
+  query.on('analyzed', function(zpools) {
+    return socket.emit('update:pool', zpools);
+  });
+  query.start();
+  return socket.on('disconnect', function() {
+    delete clients[this.id];
+    if (!Object.keys(clients).length) return query.slowDown();
+  });
+});

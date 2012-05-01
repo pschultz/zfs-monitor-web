@@ -3,6 +3,7 @@ routes = require('./routes')
 
 app = module.exports = express.createServer()
 io = require('socket.io').listen(app)
+io.set('log level', 1)
 
 app.configure ->
   app.set('views', __dirname + '/views')
@@ -28,14 +29,8 @@ app.listen 3000, ->
 
 query = new (require './modules/zpool-query')
 
-query.on 'analyzed', (analysis) ->
-  console.log p for p in analysis.pools
-
-query.start()
-
-###
 query.on 'analyzed', (zpools) ->
-  io.broadcast update: zpools
+  io.sockets.emit 'update:pool', zpools
 
 clients = {}
 
@@ -43,8 +38,11 @@ io.sockets.on 'connection', (socket) ->
   clients[socket.id] = socket
   query.keepItComin()
 
+  query.on 'analyzed', (zpools) ->
+    socket.emit 'update:pool', zpools
+
+  query.start()
+
   socket.on 'disconnect', ->
     delete clients[this.id]
     query.slowDown() if not Object.keys(clients).length
-###
-

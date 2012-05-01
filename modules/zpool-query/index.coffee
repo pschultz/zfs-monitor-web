@@ -24,14 +24,14 @@ class Query extends events.EventEmitter
   newAnalysis: {}
 
   constructor: ->
-    @keepItComin()
+    @slowDown()
     self = @
 
     setInterval ->
       self.killStalledProcesses()
     , 5000
 
-    #@on 'analyzed', -> self.start()
+    @on 'analyzed', -> self.start()
 
   start: ->
     now = new Date().getTime()
@@ -39,13 +39,15 @@ class Query extends events.EventEmitter
     self = @
 
     startedToFast = timeSinceLastRun < @spinningTreshold[0]
-    if startedToFast && @deferTimer == 0
-      deferFor = @spinningTreshold[0] - (timeSinceLastRun)
-      console.log "defering zpool queries for #{deferFor} ms"
-      @deferTimer = setTimeout ->
-        self.deferTimer = 0
-        self.query()
-      , deferFor
+
+    if startedToFast
+      if @deferTimer == 0
+        deferFor = @spinningTreshold[0] - (timeSinceLastRun)
+        console.log "defering zpool queries for #{deferFor} ms"
+        @deferTimer = setTimeout ->
+          self.deferTimer = 0
+          self.start()
+        , deferFor
 
       return
 
