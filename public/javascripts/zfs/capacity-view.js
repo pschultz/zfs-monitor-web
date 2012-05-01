@@ -13,8 +13,44 @@ define(function() {
       ZfsView.__super__.constructor.apply(this, arguments);
     }
 
+    ZfsView.prototype.chartConfig = function() {
+      return {
+        chart: {
+          renderTo: this.chartId,
+          plotBackgroundColor: 'transparent',
+          backgroundColor: 'transparent',
+          plotBorderWidth: 0,
+          plotShadow: false
+        },
+        title: {
+          text: 'Pool Size',
+          style: {
+            color: '#D3D4D4',
+            fontSize: '20px',
+            fontFamily: 'Arial,Tahoma, Geneva, sans-serif'
+          }
+        },
+        colors: ['#77AB13', '#058DC7'],
+        tooltip: {
+          enabled: false
+        },
+        plotOptions: {
+          pie: {
+            enableMouseTracking: false,
+            dataLabels: {
+              enabled: true,
+              color: 'white',
+              connectorColor: 'white'
+            }
+          }
+        },
+        series: []
+      };
+    };
+
     ZfsView.prototype.initialize = function() {
-      return this.model.on('change:free change:allocated change:size', this.render);
+      this.model.on('change:free change:allocated change:size', this.render);
+      return this.chartId = "" + this.model.cid + "-capacity-chart";
     };
 
     ZfsView.prototype.render = function() {
@@ -22,7 +58,28 @@ define(function() {
       template = $("#zfs-capacity-tmpl");
       html = template.tmpl(this.model.toJSON());
       $(this.el).html(html);
+      this.renderChart(this.chartConfig());
       return this.el;
+    };
+
+    ZfsView.prototype.renderChart = function(chartDefinition) {
+      var chartContainer;
+      chartContainer = this.$("#" + this.chartId);
+      if (!chartContainer.length) {
+        chartContainer = $("<div id='" + this.chartId + "'></div>");
+        chartContainer.addClass('capacity pie chart');
+        this.$(".content").append(chartContainer);
+      }
+      chartDefinition.chart.renderTo = chartContainer[0];
+      chartDefinition.title.text = "Pool Size: " + (humanReadableBytes(this.model.get('size')));
+      if (this.model.get('size')) {
+        chartDefinition.series.push({
+          type: 'pie',
+          name: 'Browser share',
+          data: [['Free', this.model.get('free') / this.model.get('size')], ['Allocated', this.model.get('allocated') / this.model.get('size')]]
+        });
+      }
+      return new Highcharts.Chart(chartDefinition);
     };
 
     return ZfsView;

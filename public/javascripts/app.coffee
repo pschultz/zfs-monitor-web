@@ -60,6 +60,11 @@ define [
     'tank/homes/xbmc'
   ]
 
-  for fs in fsList
+  remainingPoolSize = zpool.get 'size'
+
+  for fs in _.shuffle(fsList)
+    zfsSize = remainingPoolSize / (Math.random() * 5 + 3)
+    remainingPoolSize -= zfsSize
     zpool.get('filesystems').add new Zfs
       name: fs
+      size: zfsSize

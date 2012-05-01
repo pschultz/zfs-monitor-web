@@ -1,5 +1,5 @@
 /* line 6, ../../src/public/stylesheets/colors.sass */
-body {
+body, .highcharts-title {
   background: #111314 none;
   color: #d3d4d4;
   font: 400 20px/24px Arial, Tahoma, Geneva, sans-serif;

@@ -41,11 +41,16 @@ define(['zpool/model', 'zpool/view', 'disk/model', 'disk/view', 'disk/collection
     }
   }
   fsList = ['tank', 'tank/exports', 'tank/exports/Audio', 'tank/exports/Audio/Books', 'tank/exports/Audio/Music', 'tank/exports/Downloads', 'tank/exports/Games', 'tank/exports/Video', 'tank/exports/Video/Movies', 'tank/exports/Video/TvShows', 'tank/exports/pxe', 'tank/homes', 'tank/homes/knox', 'tank/homes/knox.old', 'tank/homes/pschultz', 'tank/homes/xbmc'];
+  remainingPoolSize = zpool.get('size');
+  _ref = _.shuffle(fsList);
   _results = [];
-  for (_i = 0, _len = fsList.length; _i < _len; _i++) {
-    fs = fsList[_i];
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    fs = _ref[_i];
+    zfsSize = remainingPoolSize / (Math.random() * 5 + 3);
+    remainingPoolSize -= zfsSize;
     _results.push(zpool.get('filesystems').add(new Zfs({
-      name: fs
+      name: fs,
+      size: zfsSize
     })));
   }
   return _results;
