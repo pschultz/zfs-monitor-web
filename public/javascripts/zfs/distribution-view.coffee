@@ -1,4 +1,4 @@
-define ['zfs/view'], (ZfsView) ->
+define ->
   class ZfsDistributionView extends Backbone.View
     chartConfig: ->
       chart: {
