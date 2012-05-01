@@ -34,7 +34,11 @@ define [
 
   window.zpool = zpool = new ZPool
     diskArrays:  new DiskArrayCollection()
+    spareDisks:  new DiskCollection()
+    logDisks:    new DiskCollection()
+    cacheDisks:  new DiskCollection()
     filesystems: new ZfsCollection()
+    status: 'ONLINE'
 
   zpoolView = new ZPoolView
     model: zpool
@@ -86,3 +90,21 @@ define [
     zpool.get('filesystems').add new Zfs
       name: fs
       size: zfsSize
+
+  zpool.get('logDisks').add new Disk
+    size: 120 * giga
+    type: 'log'
+    status: 'ONLINE'
+    deviceId: 'c5d1'
+
+  zpool.get('spareDisks').add new Disk
+    size: 1500 * giga
+    type: 'spare'
+    status: 'ONLINE'
+    deviceId: 'c5d0'
+
+  zpool.get('spareDisks').add new Disk
+    size: 1800 * giga
+    type: 'spare'
+    status: 'ONLINE'
+    deviceId: 'c6d0'

@@ -1,0 +1,18 @@
+/* line 2, ../../src/public/stylesheets/pool-caption.sass */
+#pool-caption h1 {
+  font-size: 125%;
+  padding: 0.4em;
+  margin-bottom: 1em;
+}
+/* line 6, ../../src/public/stylesheets/pool-caption.sass */
+#pool-caption h1 .status {
+  float: right;
+}
+/* line 9, ../../src/public/stylesheets/pool-caption.sass */
+#pool-caption .disks {
+  margin-bottom: 0.2em;
+}
+/* line 12, ../../src/public/stylesheets/pool-caption.sass */
+#pool-caption .disk {
+  height: 1.5em;
+}

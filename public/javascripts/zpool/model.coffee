@@ -6,6 +6,9 @@ define ['dataset/model', 'diskarray/collection'], (Dataset, DiskArrayCollection)
       allocated: 0
       name: 'unnamed'
       diskArrays: null
+      logDisks: null
+      spareDisks: null
+      cacheDisks: null
 
     statusList: [
       'ONLINE', 'OFFLINE'

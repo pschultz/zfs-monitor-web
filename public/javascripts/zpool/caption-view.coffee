@@ -1,22 +1,42 @@
-define ['zpool/model'], (ZPool) ->
+define ['zpool/model', 'disk/view'], (ZPool, DiskView) ->
   class ZPoolCaptionView extends Backbone.View
     initialize: ->
       @model.on 'change:name', @onChangeName
-      @model.on 'change:status', @onChangeStatus
+
+      @model.get('spareDisks').on 'add', @renderDisk
+      @model.get('logDisks')  .on 'add', @renderDisk
+      @model.get('cacheDisks').on 'add', @renderDisk
 
     render: =>
       template = $ "#zpool-caption-tmpl"
+      console.log @model.toJSON()
       html = template.tmpl @model.toJSON()
       $(@el).html html
+      @onChangeStatus()
+
+      @el
 
     onChangeName: =>
-      @$("h1").text(@model.get 'name')
+      @$(".name").text(@model.get 'name')
 
     onChangeStatus: =>
-      @$("h2")
-        .text(@model.get 'status')
+      @$(".status").text(@model.get 'status')
+      @$("h1")
         .removeClass(ZPool::statusList.join ' ')
         .addClass(@model.get 'status')
+
+    renderDisk: (disk) =>
+      console.log disk
+      type = disk.get 'type'
+      return unless type
+
+      view = new DiskView
+        model: disk
+        tagName: 'div'
+        className: "disk #{type}"
+        id: disk.cid
+
+      @$(".#{type}.disks").append view.render()
 
   ZPoolCaptionView
 

@@ -31,7 +31,11 @@ define(['zpool/model', 'zpool/view', 'disk/model', 'disk/view', 'disk/collection
   }
   window.zpool = zpool = new ZPool({
     diskArrays: new DiskArrayCollection(),
-    filesystems: new ZfsCollection()
+    spareDisks: new DiskCollection(),
+    logDisks: new DiskCollection(),
+    cacheDisks: new DiskCollection(),
+    filesystems: new ZfsCollection(),
+    status: 'ONLINE'
   });
   zpoolView = new ZPoolView({
     model: zpool,
@@ -60,15 +64,31 @@ define(['zpool/model', 'zpool/view', 'disk/model', 'disk/view', 'disk/collection
   fsList = ['tank', 'tank/exports', 'tank/exports/Audio', 'tank/exports/Audio/Books', 'tank/exports/Audio/Music', 'tank/exports/Downloads', 'tank/exports/Games', 'tank/exports/Video', 'tank/exports/Video/Movies', 'tank/exports/Video/TvShows', 'tank/exports/pxe', 'tank/homes', 'tank/homes/knox', 'tank/homes/knox.old', 'tank/homes/pschultz', 'tank/homes/xbmc'];
   remainingPoolSize = poolSize;
   _ref = _.shuffle(fsList);
-  _results = [];
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     fs = _ref[_i];
     zfsSize = remainingPoolSize / (Math.random() * 5 + 3);
     remainingPoolSize -= zfsSize;
-    _results.push(zpool.get('filesystems').add(new Zfs({
+    zpool.get('filesystems').add(new Zfs({
       name: fs,
       size: zfsSize
-    })));
+    }));
   }
-  return _results;
+  zpool.get('logDisks').add(new Disk({
+    size: 120 * giga,
+    type: 'log',
+    status: 'ONLINE',
+    deviceId: 'c5d1'
+  }));
+  zpool.get('spareDisks').add(new Disk({
+    size: 1500 * giga,
+    type: 'spare',
+    status: 'ONLINE',
+    deviceId: 'c5d0'
+  }));
+  return zpool.get('spareDisks').add(new Disk({
+    size: 1800 * giga,
+    type: 'spare',
+    status: 'ONLINE',
+    deviceId: 'c6d0'
+  }));
 });

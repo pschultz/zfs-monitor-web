@@ -1,0 +1,10 @@
+/* line 2, ../../src/public/stylesheets/diskarray.sass */
+.diskarray .disks {
+  height: 100%;
+}
+/* line 4, ../../src/public/stylesheets/diskarray.sass */
+.diskarray .disk {
+  height: 25%;
+  font-size: 28px;
+  padding: 0.8em 0.3em;
+}

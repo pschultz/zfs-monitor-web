@@ -5,8 +5,12 @@ script#zpool-caption-tmpl(type="text/x-jquery-tmpl")
   article
     header &nbsp;
     .content
-      h1 ${name}
-      h2 ${status}
+      h1
+        span.name   ${name}:&nbsp;
+        span.status ${status}
+      .spare.disks
+      .log.disks
+      .cache.disks
     footer
       code zpool status
 

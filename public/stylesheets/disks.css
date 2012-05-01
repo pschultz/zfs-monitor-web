@@ -1,33 +1,24 @@
 /* line 1, ../../src/public/stylesheets/disks.sass */
-.disks {
-  height: 100%;
-}
-
-/* line 4, ../../src/public/stylesheets/disks.sass */
 .disk {
-  height: 25%;
-  font-size: 40px;
-  padding: 0.5em;
   outline: 2px solid #202223;
   text-align: center;
 }
-/* line 11, ../../src/public/stylesheets/disks.sass */
+/* line 5, ../../src/public/stylesheets/disks.sass */
 .disk .id, .disk .type, .disk .size {
   float: left;
   width: 33%;
-  font-size: 70%;
 }
-/* line 16, ../../src/public/stylesheets/disks.sass */
+/* line 9, ../../src/public/stylesheets/disks.sass */
 .disk .id {
   width: 30%;
   text-align: left;
 }
-/* line 20, ../../src/public/stylesheets/disks.sass */
+/* line 13, ../../src/public/stylesheets/disks.sass */
 .disk .type {
   width: 35%;
   text-align: center;
 }
-/* line 24, ../../src/public/stylesheets/disks.sass */
+/* line 17, ../../src/public/stylesheets/disks.sass */
 .disk .size {
   width: 35%;
   text-align: right;
