@@ -119,11 +119,8 @@ class Query extends events.EventEmitter
         continue
 
       if diskArrayStartPattern.test(line)
-        #if pool.name == 'r1'
-          console.log "array analysis on #{pool.name}"
-          i = @analyseDiskArrays lines, i+2, pool
+        i = @analyseDiskArrays lines, i+2, pool
         continue
-        #@emit 'analyzed', @oldAnalysis
 
     @oldAnalysis = @newAnalysis
     @emit 'analyzed', @oldAnalysis
@@ -136,57 +133,37 @@ class Query extends events.EventEmitter
   }
 
   analyseDiskArrays: (lines, i, pool) ->
-
-    #analyseDiskArraysOld: (lines, i, pool) ->
-    #firstLine = i
-    #
     linePattern = /^ +(\S+) *(\S+)?/
     specialDeviceNamePattern = /^((raidz\d|mirror|logs|spares|cache)\S*)/
 
-    [ leadingSpaces ] = /^ +/.exec lines[i]
     lastIndentLevel = Infinity
 
     diskArray = null
     for i in [i..lines.length - 1]
       line = lines[i]
-
-      console.log '------------------------------'
-      console.log line
-
       break if line.match /^\s*$/
 
       [ leadingSpaces ] = /^ +/.exec line
       indentLevel = leadingSpaces.length
 
-      console.log "indented by #{indentLevel} spaces"
-
-      deviceType = 'striped'
       [ nil, deviceName, deviceStatus ] = linePattern.exec line
-      console.log "preliminary device name: #{deviceName}"
-
+      deviceType = 'striped'
 
       isSpecialDevice = specialDeviceNamePattern.test deviceName
       if isSpecialDevice
-        console.log "special device found"
         [ nil, deviceName, deviceType ] = specialDeviceNamePattern.exec deviceName
-        console.log "name=#{deviceName}, type=#{deviceType}, status=#{deviceStatus}"
-        console.log "creating new array"
         diskArray = @addDiskarray deviceName, deviceType, deviceStatus, pool
         lastIndentLevel = indentLevel
         continue
-      #else
-        #deviceName = 'unnamed'
 
       if indentLevel < lastIndentLevel
-        console.log "unindented, creating new array"
         diskArray = @addDiskarray deviceName, deviceType, deviceStatus, pool
         lastIndentLevel = indentLevel
-        continue if diskArray.type != 'striped'
+        continue if diskArray.type isnt 'striped'
 
       disk = @newDisk()
       disk.name = deviceName
       disk.status = deviceStatus
-      console.log "appending disk #{disk.name}: #{disk.status}"
       diskArray.disks.push disk
 
       lastIndentLevel = indentLevel

@@ -137,10 +137,9 @@ Query = (function(_super) {
         continue;
       }
       if (diskArrayStartPattern.test(line)) {
-        console.log("array analysis on " + pool.name);
         i = this.analyseDiskArrays(lines, i + 2, pool);
+        continue;
       }
-      continue;
     }
     this.oldAnalysis = this.newAnalysis;
     return this.emit('analyzed', this.oldAnalysis);
@@ -159,32 +158,23 @@ Query = (function(_super) {
     var deviceName, deviceStatus, deviceType, disk, diskArray, indentLevel, isSpecialDevice, lastIndentLevel, leadingSpaces, line, linePattern, nil, specialDeviceNamePattern, _ref, _ref2, _ref3;
     linePattern = /^ +(\S+) *(\S+)?/;
     specialDeviceNamePattern = /^((raidz\d|mirror|logs|spares|cache)\S*)/;
-    leadingSpaces = /^ +/.exec(lines[i])[0];
     lastIndentLevel = Infinity;
     diskArray = null;
     for (i = i, _ref = lines.length - 1; i <= _ref ? i <= _ref : i >= _ref; i <= _ref ? i++ : i--) {
       line = lines[i];
-      console.log('------------------------------');
-      console.log(line);
       if (line.match(/^\s*$/)) break;
       leadingSpaces = /^ +/.exec(line)[0];
       indentLevel = leadingSpaces.length;
-      console.log("indented by " + indentLevel + " spaces");
-      deviceType = 'striped';
       _ref2 = linePattern.exec(line), nil = _ref2[0], deviceName = _ref2[1], deviceStatus = _ref2[2];
-      console.log("preliminary device name: " + deviceName);
+      deviceType = 'striped';
       isSpecialDevice = specialDeviceNamePattern.test(deviceName);
       if (isSpecialDevice) {
-        console.log("special device found");
         _ref3 = specialDeviceNamePattern.exec(deviceName), nil = _ref3[0], deviceName = _ref3[1], deviceType = _ref3[2];
-        console.log("name=" + deviceName + ", type=" + deviceType + ", status=" + deviceStatus);
-        console.log("creating new array");
         diskArray = this.addDiskarray(deviceName, deviceType, deviceStatus, pool);
         lastIndentLevel = indentLevel;
         continue;
       }
       if (indentLevel < lastIndentLevel) {
-        console.log("unindented, creating new array");
         diskArray = this.addDiskarray(deviceName, deviceType, deviceStatus, pool);
         lastIndentLevel = indentLevel;
         if (diskArray.type !== 'striped') continue;
@@ -192,7 +182,6 @@ Query = (function(_super) {
       disk = this.newDisk();
       disk.name = deviceName;
       disk.status = deviceStatus;
-      console.log("appending disk " + disk.name + ": " + disk.status);
       diskArray.disks.push(disk);
       lastIndentLevel = indentLevel;
       continue;
