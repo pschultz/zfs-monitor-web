@@ -13,12 +13,15 @@ define(function() {
       ZfsView.__super__.constructor.apply(this, arguments);
     }
 
+    ZfsView.prototype.initialize = function() {
+      return this.model.on('change:free change:allocated change:size', this.render);
+    };
+
     ZfsView.prototype.render = function() {
       var html, template;
       template = $("#zfs-capacity-tmpl");
       html = template.tmpl(this.model.toJSON());
-      this.el = $(html);
-      $(this.el).attr('id', this.model.cid);
+      $(this.el).html(html);
       return this.el;
     };
 

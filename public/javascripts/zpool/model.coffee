@@ -7,4 +7,10 @@ define ['dataset/model', 'diskarray/collection'], (Dataset, DiskArrayCollection)
       name: 'unnamed'
       diskArrays: null
 
+    statusList: [
+      'ONLINE', 'OFFLINE'
+      'FAULTED', 'UNAVAIL'
+      'DEGRADED'
+    ]
+
   ZPoolModel

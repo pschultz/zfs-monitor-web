@@ -1,23 +1,32 @@
 define ['disk/view'], (DiskView) ->
   class DiskArrayView extends Backbone.View
+    initialize: ->
+      return unless @model
+
+      @model.get('disks').on 'add', @renderDisk
+
+      self = @
+      @model.collection.on 'remove', (diskArray) ->
+        self.remove() if diskArray.cid == self.model.cid
+
     render: =>
       template = $ "#diskarray-tmpl"
       html = template.tmpl @model.toJSON()
-      @el = $(html)
+      $(@el).html html
 
       disks = @model.get 'disks'
-      #console.log disks
 
-      #self = @
       disks.each @renderDisk
       $(@el)
 
     renderDisk: (disk) =>
-      #console.log @el
       view = new DiskView
         model: disk
-        el: @$("##{disk.cid}")
-      $(@el).find('.disks').append view.render()
+        tagName: 'div'
+        className: 'disk'
+        id: disk.cid
+
+      @$('.disks').append view.render()
 
 
   DiskArrayView

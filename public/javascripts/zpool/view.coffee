@@ -1,34 +1,43 @@
-define ['diskarray/view', 'zfs/capacity-view', 'zfs/distribution-view'], (DiskArrayView, ZfsCapacityView, ZfsDistributionView) ->
+define ['zpool/caption-view', 'diskarray/view', 'zfs/filesystem-view'], (ZPoolCaptionView, DiskArrayView, FilesystemView) ->
   class ZPoolView extends Backbone.View
+    initialize: ->
+      return unless @model
+
+      @model.get('diskArrays').on 'add', @renderDiskArray
+
     render: =>
       template = $ "#zpool-tmpl"
       html = template.tmpl @model.toJSON()
       $(@el).html html
-      @$("h2").addClass @model.get('status')
 
-      diskArrays = @model.get 'diskArrays'
+      @renderCaption()
+      @model.get('diskArrays').each @renderDiskArray
+      @renderFilesystems()
 
-      diskArrays.each @renderDiskArray
-      @renderZfsCapacity()
-      @renderZfsDistribution()
       @el
+
+    renderCaption: =>
+      captionView = new ZPoolCaptionView
+        model: @model
+        id: 'pool-caption'
+        className: 'widget head r1'
+      $(@el).prepend captionView.render()
 
     renderDiskArray: (diskArray) =>
       view = new DiskArrayView
         model: diskArray
-        el: @$("##{diskArray.cid}")
+        tagName: 'div'
+        id: @model.cid
+        className: 'diskarray widget c1 r1'
 
-      @$("#arrays").append view.render()
+      @$(".diskarrays").append view.render()
 
-    renderZfsCapacity: ->
-      view = new ZfsCapacityView
+    renderFilesystems: =>
+      view = new FilesystemView
         model: @model
-      @$("#filesystems").append view.render()
+        className: 'filesystems widget-container pull'
 
-    renderZfsDistribution: ->
-      view = new ZfsDistributionView
-        collection: @model.get 'filesystems'
-      @$("#filesystems").append view.render()
+      $(@el).append view.render()
 
 
   ZPoolView

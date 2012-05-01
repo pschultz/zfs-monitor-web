@@ -5,18 +5,31 @@ define [
   'diskarray/model', 'diskarray/collection'
 ], (ZPool, ZPoolView, Disk, DiskView, DiskCollection, Zfs, ZfsView, ZfsCollection, DiskArray, DiskArrayCollection) ->
 
-  diskArrays = new DiskArrayCollection()
-  filesystems = new ZfsCollection()
+  window.zpool = zpool = new ZPool
+    diskArrays:  new DiskArrayCollection()
+    filesystems: new ZfsCollection()
+
+  zpoolView = new ZPoolView
+    model: zpool
+    el: $("#pool")
+
+  zpoolView.render()
+
+  zpool.set
+    name: 'tank'
+    status: 'ONLINE'
+    size:      3.0 * 1024 * 1024 * 1024 * 1024
+    allocated: 2.1 * 1024 * 1024 * 1024 * 1024
 
   for r in [0..3]
     disks = new DiskCollection()
+    zpool.get('diskArrays').add new DiskArray
+      name: "raidz-#{r}"
+      disks: disks
+
     for d in [0..3]
       disks.add new Disk
         deviceId: "c#{r}d#{d}"
-
-    diskArrays.add new DiskArray
-      name: "raidz-#{r}"
-      disks: disks
 
   fsList = [
     'tank'
@@ -38,19 +51,5 @@ define [
   ]
 
   for fs in fsList
-    filesystems.add new Zfs
+    zpool.get('filesystems').add new Zfs
       name: fs
-
-  zpool = new ZPool
-    name: 'tank'
-    diskArrays: diskArrays
-    filesystems: filesystems
-    size:      3.0 * 1024 * 1024 * 1024 * 1024
-    allocated: 2.1 * 1024 * 1024 * 1024 * 1024
-    status: 'ONLINE'
-
-  zpoolView = new ZPoolView
-    model: zpool
-    el: $("#pool")
-
-  zpoolView.render()

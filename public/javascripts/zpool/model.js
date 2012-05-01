@@ -19,6 +19,8 @@ define(['dataset/model', 'diskarray/collection'], function(Dataset, DiskArrayCol
       diskArrays: null
     };
 
+    ZPoolModel.prototype.statusList = ['ONLINE', 'OFFLINE', 'FAULTED', 'UNAVAIL', 'DEGRADED'];
+
     return ZPoolModel;
 
   })(Dataset);

@@ -14,11 +14,21 @@ define(['disk/view'], function(DiskView) {
       DiskArrayView.__super__.constructor.apply(this, arguments);
     }
 
+    DiskArrayView.prototype.initialize = function() {
+      var self;
+      if (!this.model) return;
+      this.model.get('disks').on('add', this.renderDisk);
+      self = this;
+      return this.model.collection.on('remove', function(diskArray) {
+        if (diskArray.cid === self.model.cid) return self.remove();
+      });
+    };
+
     DiskArrayView.prototype.render = function() {
       var disks, html, template;
       template = $("#diskarray-tmpl");
       html = template.tmpl(this.model.toJSON());
-      this.el = $(html);
+      $(this.el).html(html);
       disks = this.model.get('disks');
       disks.each(this.renderDisk);
       return $(this.el);
@@ -28,9 +38,11 @@ define(['disk/view'], function(DiskView) {
       var view;
       view = new DiskView({
         model: disk,
-        el: this.$("#" + disk.cid)
+        tagName: 'div',
+        className: 'disk',
+        id: disk.cid
       });
-      return $(this.el).find('.disks').append(view.render());
+      return this.$('.disks').append(view.render());
     };
 
     return DiskArrayView;

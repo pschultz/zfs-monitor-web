@@ -14,23 +14,25 @@ define(['zfs/view'], function(ZfsView) {
       ZfsDistributionView.__super__.constructor.apply(this, arguments);
     }
 
+    ZfsDistributionView.prototype.initialize = function() {
+      return this.collection.on('add remove change', this.render);
+    };
+
     ZfsDistributionView.prototype.render = function() {
       var html, template;
       template = $("#zfs-distribution-tmpl");
       html = template.tmpl();
-      console.log(html);
-      this.el = $(html);
+      $(this.el).html(html);
       this.collection.each(this.renderZfs);
       return this.el;
     };
 
     ZfsDistributionView.prototype.renderZfs = function(zfs) {
       var view;
-      console.log(zfs);
       view = new ZfsView({
         model: zfs
       });
-      return $(this.el).find(".content").append(view.render());
+      return this.$(".content").append(view.render());
     };
 
     return ZfsDistributionView;

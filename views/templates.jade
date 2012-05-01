@@ -1,47 +1,48 @@
 script#zpool-tmpl(type="text/x-jquery-tmpl")
-  #pool-caption.widget.head.r1
-    article
-      header &nbsp;
-      .content
-        h1 ${name}
-        h2 ${status}
-      footer
-        code zpool status
-  #arrays
-  #filesystems
+  .diskarrays.widget-container
+
+script#zpool-caption-tmpl(type="text/x-jquery-tmpl")
+  article
+    header &nbsp;
+    .content
+      h1 ${name}
+      h2 ${status}
+    footer
+      code zpool status
+
+script#diskarrays-tmpl(type="text/x-jquery-tmpl")
 
 script#diskarray-tmpl(type="text/x-jquery-tmpl")
-  .diskarray.widget.c1.r1
-    article
-      header
-        h1 ${name} <small>${type}</small>
-      .content
-        .disks
-      footer
-        code zpool status
+  article
+    header
+      h1 ${name} <small>${type}</small>
+    .content
+      .disks
+    footer
+      code zpool status
 
 script#disk-tmpl(type="text/x-jquery-tmpl")
-  .disk ${deviceId}
+  ${deviceId}
+
+
+script#filesystem-tmpl(type="text/x-jquery-tmpl")
 
 script#zfs-capacity-tmpl(type="text/x-jquery-tmpl")
-  .widget.head.r2
-  #zfs-capacity.widget.c2.r2
-    article
-      header
-        h1 Pool Capacity
-      .content
-        span ${free}/${allocated} ${size} total
-      footer 
-        code zpool list
+  article
+    header
+      h1 Pool Capacity
+    .content
+      span ${free}/${allocated} ${size} total
+    footer 
+      code zpool list
 
 script#zfs-distribution-tmpl(type="text/x-jquery-tmpl")
-  #zfs-distribution.widget.c2.r2
-    article
-      header
-        h1 Data Distribution
-      .content
-      footer
-        code zfs list
+  article
+    header
+      h1 Data Distribution
+    .content
+    footer
+      code zfs list
 
 script#zfs-tmpl(type="text/x-jquery-tmpl")
   div

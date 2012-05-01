@@ -1,19 +1,20 @@
 define ['zfs/view'], (ZfsView) ->
   class ZfsDistributionView extends Backbone.View
+    initialize: ->
+      @collection.on 'add remove change', @render
+
     render: =>
       template = $ "#zfs-distribution-tmpl"
       html = template.tmpl()
-      console.log html
-      @el = $(html)
+      $(@el).html html
 
       @collection.each @renderZfs
       @el
 
     renderZfs: (zfs) =>
-      console.log zfs
       view = new ZfsView
         model: zfs
-      $(@el).find(".content").append view.render()
+      @$(".content").append view.render()
 
 
   ZfsDistributionView

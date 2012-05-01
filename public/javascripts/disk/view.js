@@ -13,13 +13,20 @@ define(function() {
       DiskView.__super__.constructor.apply(this, arguments);
     }
 
+    DiskView.prototype.initialize = function() {
+      var self;
+      self = this;
+      return this.model.collection.on('remove', function(disk) {
+        if (disk.cid === self.model.cid) return self.remove();
+      });
+    };
+
     DiskView.prototype.render = function() {
       var html, template;
       template = $("#disk-tmpl");
       html = template.tmpl(this.model.toJSON());
-      this.el = $(html);
+      $(this.el).html(html);
       $(this.el).addClass(this.model.get('status'));
-      $(this.el).attr('id', this.model.cid);
       return this.el;
     };
 
