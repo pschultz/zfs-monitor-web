@@ -31,6 +31,14 @@ script#disk-tmpl(type="text/x-jquery-tmpl")
   .size ${size}
 
 
+script#pool-scan-tmpl(type="text/x-jquery-tmpl")
+  article
+    header
+      h1 Pool Scans
+    .content
+    footer
+      code zpool status
+
 script#filesystem-tmpl(type="text/x-jquery-tmpl")
 
 script#zfs-capacity-tmpl(type="text/x-jquery-tmpl")

@@ -1,4 +1,4 @@
-define ['zpool/caption-view', 'diskarray/view', 'zfs/filesystem-view'], (ZPoolCaptionView, DiskArrayView, FilesystemView) ->
+define ['zpool/caption-view', 'diskarray/view', 'scan/view', 'zfs/filesystem-view'], (ZPoolCaptionView, DiskArrayView, ScanView, FilesystemView) ->
   class ZPoolView extends Backbone.View
     initialize: ->
       return unless @model
@@ -11,6 +11,7 @@ define ['zpool/caption-view', 'diskarray/view', 'zfs/filesystem-view'], (ZPoolCa
       $(@el).html html
 
       @renderCaption()
+      @renderScans()
       @renderFilesystems()
 
       @el
@@ -31,10 +32,18 @@ define ['zpool/caption-view', 'diskarray/view', 'zfs/filesystem-view'], (ZPoolCa
 
       @$(".diskarrays").append view.render()
 
+    renderScans: =>
+      view = new ScanView
+        model: @model
+        collection: @model.get 'scans'
+        className: 'scans widget head r2'
+
+      $(@el).append view.render()
+
     renderFilesystems: =>
       view = new FilesystemView
         model: @model
-        className: 'filesystems widget-container pull'
+        className: 'filesystems widget-container'
 
       $(@el).append view.render()
 

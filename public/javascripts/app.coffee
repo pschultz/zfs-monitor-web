@@ -1,9 +1,10 @@
 define [
-  'zpool/model', 'zpool/view'
+  'zpool/model', 'zpool/view',
+  'scan/model', 'scan/collection'
   'disk/model', 'disk/view', 'disk/collection'
   'zfs/model', 'zfs/view', 'zfs/collection'
   'diskarray/model', 'diskarray/collection'
-], (ZPool, ZPoolView, Disk, DiskView, DiskCollection, Zfs, ZfsView, ZfsCollection, DiskArray, DiskArrayCollection) ->
+], (ZPool, ZPoolView, Scan, ScanCollection, Disk, DiskView, DiskCollection, Zfs, ZfsView, ZfsCollection, DiskArray, DiskArrayCollection) ->
   kilo =        1024
   mega = kilo * 1024
   giga = mega * 1024
@@ -38,6 +39,7 @@ define [
     logDisks:    new DiskCollection()
     cacheDisks:  new DiskCollection()
     filesystems: new ZfsCollection()
+    scans:       new ScanCollection()
     status: 'ONLINE'
 
   zpoolView = new ZPoolView
@@ -108,3 +110,8 @@ define [
     type: 'spare'
     status: 'ONLINE'
     deviceId: 'c6d0'
+
+  zpool.get('scans').add new Scan
+    type: 'scrub'
+    eta: 182
+    progress: .99

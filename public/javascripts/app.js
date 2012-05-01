@@ -1,6 +1,6 @@
 
-define(['zpool/model', 'zpool/view', 'disk/model', 'disk/view', 'disk/collection', 'zfs/model', 'zfs/view', 'zfs/collection', 'diskarray/model', 'diskarray/collection'], function(ZPool, ZPoolView, Disk, DiskView, DiskCollection, Zfs, ZfsView, ZfsCollection, DiskArray, DiskArrayCollection) {
-  var arraySize, d, diskSizes, disks, fs, fsList, giga, kilo, mega, poolSize, r, remainingPoolSize, size, tera, zfsSize, zpool, zpoolView, _i, _len, _ref, _results;
+define(['zpool/model', 'zpool/view', 'scan/model', 'scan/collection', 'disk/model', 'disk/view', 'disk/collection', 'zfs/model', 'zfs/view', 'zfs/collection', 'diskarray/model', 'diskarray/collection'], function(ZPool, ZPoolView, Scan, ScanCollection, Disk, DiskView, DiskCollection, Zfs, ZfsView, ZfsCollection, DiskArray, DiskArrayCollection) {
+  var arraySize, d, diskSizes, disks, fs, fsList, giga, kilo, mega, poolSize, r, remainingPoolSize, size, tera, zfsSize, zpool, zpoolView, _i, _len, _ref;
   kilo = 1024;
   mega = kilo * 1024;
   giga = mega * 1024;
@@ -35,6 +35,7 @@ define(['zpool/model', 'zpool/view', 'disk/model', 'disk/view', 'disk/collection
     logDisks: new DiskCollection(),
     cacheDisks: new DiskCollection(),
     filesystems: new ZfsCollection(),
+    scans: new ScanCollection(),
     status: 'ONLINE'
   });
   zpoolView = new ZPoolView({
@@ -85,10 +86,15 @@ define(['zpool/model', 'zpool/view', 'disk/model', 'disk/view', 'disk/collection
     status: 'ONLINE',
     deviceId: 'c5d0'
   }));
-  return zpool.get('spareDisks').add(new Disk({
+  zpool.get('spareDisks').add(new Disk({
     size: 1800 * giga,
     type: 'spare',
     status: 'ONLINE',
     deviceId: 'c6d0'
+  }));
+  return zpool.get('scans').add(new Scan({
+    type: 'scrub',
+    eta: 182,
+    progress: .99
   }));
 });

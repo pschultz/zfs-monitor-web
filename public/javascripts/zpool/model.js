@@ -12,14 +12,15 @@ define(['dataset/model', 'diskarray/collection'], function(Dataset, DiskArrayCol
     }
 
     ZPoolModel.prototype.defaults = {
+      name: 'unnamed',
       size: 0,
       free: 0,
       allocated: 0,
-      name: 'unnamed',
       diskArrays: null,
       logDisks: null,
       spareDisks: null,
-      cacheDisks: null
+      cacheDisks: null,
+      scans: null
     };
 
     ZPoolModel.prototype.statusList = ['ONLINE', 'OFFLINE', 'FAULTED', 'UNAVAIL', 'DEGRADED'];

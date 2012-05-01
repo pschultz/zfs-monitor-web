@@ -118,13 +118,8 @@ footer {
   max-height: 335px;
 }
 
-/* line 78, ../../src/public/stylesheets/layout.sass */
-.filesystems {
-  clear: left;
-}
-
-/* line 81, ../../src/public/stylesheets/layout.sass */
-.pie.chart {
+/* line 79, ../../src/public/stylesheets/layout.sass */
+.chart {
   height: 100%;
   width: 100%;
 }
