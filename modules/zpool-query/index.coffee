@@ -95,28 +95,56 @@ class Query extends events.EventEmitter
 
   analyseZpool: ->
     lines = @zpoolStatusOutput.split /\n/
-    nextPoolPattern = /^  pool: (\S+)/
+    nextPoolPattern   = /^  pool: (\S+)/
     poolStatusPattern = /^ state: (\S+)/
-
-    poolAnalysers = []
+    poolScanPattern   = /^  scan: (resilver|scrub) in progress/
 
     diskArrayStartPattern = /^        NAME/
-    specialDiskStartPattern = /^        (log|spare|cache)/
 
     @newAnalysis.pools = []
     for i in [0..lines.length - 1]
       line = lines[i]
 
       if nextPoolPattern.test(line)
-        [ nil, poolName ] = nextPoolPattern.exec(line)
+        [ nil, poolName ] = nextPoolPattern.exec line
         pool = @newPool()
         pool.name = poolName
         @newAnalysis.pools.push pool
         continue
 
       if poolStatusPattern.test(line)
-        [ nil, pool.status ] = poolStatusPattern.exec(line)
+        [ nil, pool.status ] = poolStatusPattern.exec line
         continue
+
+      if poolScanPattern.test(line)
+        eta = 0
+        progress = 0
+
+        [ nil, type ] = poolScanPattern.exec line
+
+        line = lines[++i]
+
+        etaPattern = /(\d+)h(\d)+m to go/
+        if etaPattern.test line
+          [ nil, hours, minutes ] = etaPattern.exec line
+          eta = hours * 3600 + minutes * 60
+
+        line = lines[++i]
+
+        progressPattern = /([\d.]+)% done/
+
+        if progressPattern.test line
+          [ nil, percent ] = progressPattern.exec line
+          progress = percent / 100
+
+        pool.scan.push {
+          type: type
+          eta: eta
+          progress: progress
+        }
+
+        continue
+
 
       if diskArrayStartPattern.test(line)
         i = @analyseDiskArrays lines, i+2, pool
@@ -128,6 +156,7 @@ class Query extends events.EventEmitter
   newPool: -> {
     name: 'unnamed'
     status: 'UNKNOWN'
+    scan: []
     diskArrays: []
     filesystems: []
   }

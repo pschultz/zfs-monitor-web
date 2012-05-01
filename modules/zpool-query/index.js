@@ -115,13 +115,12 @@ Query = (function(_super) {
   };
 
   Query.prototype.analyseZpool = function() {
-    var diskArrayStartPattern, i, line, lines, nextPoolPattern, nil, pool, poolAnalysers, poolName, poolStatusPattern, specialDiskStartPattern, _ref, _ref2, _ref3;
+    var diskArrayStartPattern, eta, etaPattern, hours, i, line, lines, minutes, nextPoolPattern, nil, percent, pool, poolName, poolScanPattern, poolStatusPattern, progress, progressPattern, type, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
     lines = this.zpoolStatusOutput.split(/\n/);
     nextPoolPattern = /^  pool: (\S+)/;
     poolStatusPattern = /^ state: (\S+)/;
-    poolAnalysers = [];
+    poolScanPattern = /^  scan: (resilver|scrub) in progress/;
     diskArrayStartPattern = /^        NAME/;
-    specialDiskStartPattern = /^        (log|spare|cache)/;
     this.newAnalysis.pools = [];
     for (i = 0, _ref = lines.length - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
       line = lines[i];
@@ -134,6 +133,29 @@ Query = (function(_super) {
       }
       if (poolStatusPattern.test(line)) {
         _ref3 = poolStatusPattern.exec(line), nil = _ref3[0], pool.status = _ref3[1];
+        continue;
+      }
+      if (poolScanPattern.test(line)) {
+        eta = 0;
+        progress = 0;
+        _ref4 = poolScanPattern.exec(line), nil = _ref4[0], type = _ref4[1];
+        line = lines[++i];
+        etaPattern = /(\d+)h(\d)+m to go/;
+        if (etaPattern.test(line)) {
+          _ref5 = etaPattern.exec(line), nil = _ref5[0], hours = _ref5[1], minutes = _ref5[2];
+          eta = hours * 3600 + minutes * 60;
+        }
+        line = lines[++i];
+        progressPattern = /([\d.]+)% done/;
+        if (progressPattern.test(line)) {
+          _ref6 = progressPattern.exec(line), nil = _ref6[0], percent = _ref6[1];
+          progress = percent / 100;
+        }
+        pool.scan.push({
+          type: type,
+          eta: eta,
+          progress: progress
+        });
         continue;
       }
       if (diskArrayStartPattern.test(line)) {
@@ -149,6 +171,7 @@ Query = (function(_super) {
     return {
       name: 'unnamed',
       status: 'UNKNOWN',
+      scan: [],
       diskArrays: [],
       filesystems: []
     };
