@@ -7,11 +7,19 @@ define ->
       name: 'unnamed'
 
     initialize: ->
-      @on 'change:free change:allocated', @updateFree
-      @updateFree()
+      @on 'change:size', @onChangeSize
+      @on 'change:allocated', @onChangeAllocated
+      @on 'change:free', @onChangeFree
+      @calculateFree()
 
-    updateFree: =>
-      @set 'free': @get('size') - @get('allocated')
+    onChangeSize: =>
+      @calculateFree()
+
+    onChangeAllocated: =>
+      @calculateFree()
+
+    calculateFree: =>
+      @set { free: @get('size') - @get('allocated') }, silent: true
 
   DatasetModel
 

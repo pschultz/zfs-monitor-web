@@ -9,6 +9,7 @@ define(function() {
     __extends(ZfsView, _super);
 
     function ZfsView() {
+      this.renderChart = __bind(this.renderChart, this);
       this.render = __bind(this.render, this);
       ZfsView.__super__.constructor.apply(this, arguments);
     }
@@ -44,13 +45,19 @@ define(function() {
             }
           }
         },
-        series: []
+        series: [
+          {
+            type: 'pie',
+            name: 'Pool Capacity',
+            data: []
+          }
+        ]
       };
     };
 
     ZfsView.prototype.initialize = function() {
-      this.model.on('change:free change:allocated change:size', this.render);
-      return this.chartId = "" + this.model.cid + "-capacity-chart";
+      this.chartId = "" + this.model.cid + "-capacity-chart";
+      return this.model.on('change:free change:allocated change:size', this.renderChart);
     };
 
     ZfsView.prototype.render = function() {
@@ -62,24 +69,34 @@ define(function() {
       return this.el;
     };
 
-    ZfsView.prototype.renderChart = function(chartDefinition) {
-      var chartContainer;
-      chartContainer = this.$("#" + this.chartId);
-      if (!chartContainer.length) {
-        chartContainer = $("<div id='" + this.chartId + "'></div>");
-        chartContainer.addClass('capacity pie chart');
-        this.$(".content").append(chartContainer);
+    ZfsView.prototype.renderChart = function() {
+      if (!this.model.get('size')) return;
+      if (!((this.chartContainer != null) && (this.chart != null))) {
+        this.createChart();
       }
-      chartDefinition.chart.renderTo = chartContainer[0];
-      chartDefinition.title.text = "Pool Size: " + (humanReadableBytes(this.model.get('size')));
-      if (this.model.get('size')) {
-        chartDefinition.series.push({
-          type: 'pie',
-          name: 'Browser share',
-          data: [['Free', this.model.get('free') / this.model.get('size')], ['Allocated', this.model.get('allocated') / this.model.get('size')]]
-        });
-      }
-      return new Highcharts.Chart(chartDefinition);
+      return this.updateChart();
+    };
+
+    ZfsView.prototype.createChart = function() {
+      var chartDefinition;
+      this.chartContainer = this.$("#" + this.chartId);
+      this.chartContainer = $("<div id='" + this.chartId + "'></div>");
+      this.chartContainer.addClass('capacity pie chart');
+      this.$(".content").append(this.chartContainer);
+      chartDefinition = this.chartConfig();
+      chartDefinition.chart.renderTo = this.chartContainer[0];
+      return this.chart = new Highcharts.Chart(chartDefinition);
+    };
+
+    ZfsView.prototype.updateChart = function() {
+      this.chart.series[0].setData(this.getChartData());
+      return this.chart.setTitle({
+        text: "Pool Size: " + (humanReadableBytes(this.model.get('size')))
+      });
+    };
+
+    ZfsView.prototype.getChartData = function() {
+      return [['Free', this.model.get('free')], ['Allocated', this.model.get('allocated')]];
     };
 
     return ZfsView;

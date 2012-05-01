@@ -9,7 +9,9 @@ define(function() {
     __extends(DatasetModel, _super);
 
     function DatasetModel() {
-      this.updateFree = __bind(this.updateFree, this);
+      this.calculateFree = __bind(this.calculateFree, this);
+      this.onChangeAllocated = __bind(this.onChangeAllocated, this);
+      this.onChangeSize = __bind(this.onChangeSize, this);
       DatasetModel.__super__.constructor.apply(this, arguments);
     }
 
@@ -21,13 +23,25 @@ define(function() {
     };
 
     DatasetModel.prototype.initialize = function() {
-      this.on('change:free change:allocated', this.updateFree);
-      return this.updateFree();
+      this.on('change:size', this.onChangeSize);
+      this.on('change:allocated', this.onChangeAllocated);
+      this.on('change:free', this.onChangeFree);
+      return this.calculateFree();
     };
 
-    DatasetModel.prototype.updateFree = function() {
+    DatasetModel.prototype.onChangeSize = function() {
+      return this.calculateFree();
+    };
+
+    DatasetModel.prototype.onChangeAllocated = function() {
+      return this.calculateFree();
+    };
+
+    DatasetModel.prototype.calculateFree = function() {
       return this.set({
-        'free': this.get('size') - this.get('allocated')
+        free: this.get('size') - this.get('allocated')
+      }, {
+        silent: true
       });
     };
 

@@ -31,11 +31,15 @@ define ->
           },
         },
       },
-      series: []
+      series: [
+        type: 'pie',
+        name: 'Pool Capacity',
+        data: []
+      ]
 
     initialize: ->
-      @model.on 'change:free change:allocated change:size', @render
       @chartId = "#{@model.cid}-capacity-chart"
+      @model.on 'change:free change:allocated change:size', @renderChart
 
     render: =>
       template = $ "#zfs-capacity-tmpl"
@@ -46,25 +50,31 @@ define ->
 
       @el
 
-    renderChart: (chartDefinition) ->
-      chartContainer = @$("##{@chartId}")
-      unless chartContainer.length
-        chartContainer = $ "<div id='#{@chartId}'></div>"
-        chartContainer.addClass 'capacity pie chart'
-        @$(".content").append chartContainer
+    renderChart: =>
+      return unless @model.get('size')
 
-      chartDefinition.chart.renderTo = chartContainer[0]
-      chartDefinition.title.text = "Pool Size: #{humanReadableBytes @model.get('size')}"
+      @createChart() unless @chartContainer? && @chart?
+      @updateChart()
 
-      if @model.get('size')
-        chartDefinition.series.push
-          type: 'pie',
-          name: 'Browser share',
-          data: [
-            ['Free',   @model.get('free') / @model.get('size')],
-            ['Allocated',   @model.get('allocated') / @model.get('size')],
-          ]
+    createChart: ->
+      @chartContainer = @$("##{@chartId}")
 
-      new Highcharts.Chart(chartDefinition)
+      @chartContainer = $ "<div id='#{@chartId}'></div>"
+      @chartContainer.addClass 'capacity pie chart'
+      @$(".content").append @chartContainer
+
+      chartDefinition = @chartConfig()
+      chartDefinition.chart.renderTo = @chartContainer[0]
+
+      @chart = new Highcharts.Chart(chartDefinition)
+
+    updateChart: ->
+      @chart.series[0].setData @getChartData()
+      @chart.setTitle text: "Pool Size: #{humanReadableBytes @model.get('size')}"
+
+    getChartData: -> [
+      ['Free',   @model.get('free')],
+      ['Allocated',   @model.get('allocated')],
+    ]
 
   ZfsView
