@@ -113,20 +113,20 @@ Query = (function(_super) {
   };
 
   Query.prototype.queryZpool = function(cb) {
-    var child, env, self;
+    var env, self;
     env = process.env;
     env.PATH += ":" + path.normalize(path.join(__dirname, '../../zfsmock'));
-    child = cproc.spawn('zpool', ['status'], {
+    this.zpool = cproc.spawn('zpool', ['status'], {
       env: env
     });
     this.zpoolStatusOutput = "";
     self = this;
-    child.stdout.setEncoding('utf8');
-    child.stderr.pipe(process.stderr);
-    child.stdout.on('data', function(chunk) {
+    this.zpool.stdout.setEncoding('utf8');
+    this.zpool.stderr.pipe(process.stderr);
+    this.zpool.stdout.on('data', function(chunk) {
       return self.zpoolStatusOutput += chunk;
     });
-    return child.on('exit', function(code) {
+    return this.zpool.on('exit', function(code) {
       if (code === 0) {
         self.zpool = null;
         return cb();

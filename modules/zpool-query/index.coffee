@@ -92,16 +92,16 @@ class Query extends events.EventEmitter
     env = process.env
     env.PATH += ":" + path.normalize path.join __dirname, '../../zfsmock'
 
-    child = cproc.spawn 'zpool', ['status'], env: env
+    @zpool = cproc.spawn 'zpool', ['status'], env: env
 
     @zpoolStatusOutput = ""
     self = @
 
-    child.stdout.setEncoding 'utf8'
-    child.stderr.pipe process.stderr
-    child.stdout.on 'data', (chunk) ->
+    @zpool.stdout.setEncoding 'utf8'
+    @zpool.stderr.pipe process.stderr
+    @zpool.stdout.on 'data', (chunk) ->
       self.zpoolStatusOutput += chunk
-    child.on 'exit', (code) ->
+    @zpool.on 'exit', (code) ->
       if code == 0
         self.zpool = null
         cb()
