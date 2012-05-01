@@ -1,6 +1,10 @@
 
 define(['zpool/model', 'zpool/view', 'disk/model', 'disk/view', 'disk/collection', 'zfs/model', 'zfs/view', 'zfs/collection', 'diskarray/model', 'diskarray/collection'], function(ZPool, ZPoolView, Disk, DiskView, DiskCollection, Zfs, ZfsView, ZfsCollection, DiskArray, DiskArrayCollection) {
-  var d, disks, fs, fsList, r, remainingPoolSize, zfsSize, zpool, zpoolView, _i, _len, _ref, _results;
+  var arraySize, d, diskSizes, disks, fs, fsList, giga, kilo, mega, poolSize, r, remainingPoolSize, size, tera, zfsSize, zpool, zpoolView, _i, _len, _ref, _results;
+  kilo = 1024;
+  mega = kilo * 1024;
+  giga = mega * 1024;
+  tera = giga * 1024;
   window.humanReadableBytes = function(bytes) {
     var size, suffix, suffixes;
     suffixes = ['K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
@@ -13,6 +17,18 @@ define(['zpool/model', 'zpool/view', 'disk/model', 'disk/view', 'disk/collection
     size = Math.round(size * 100) / 100;
     return "" + size + " " + suffix + "B";
   };
+  diskSizes = [];
+  poolSize = 0;
+  for (r = 0; r <= 3; r++) {
+    diskSizes[r] = [];
+    arraySize = Infinity;
+    for (d = 0; d <= 3; d++) {
+      size = (Math.random() * .5 + 1.5) * tera;
+      diskSizes[r][d] = size;
+      arraySize = Math.min(arraySize, size);
+    }
+    poolSize += arraySize * 3;
+  }
   window.zpool = zpool = new ZPool({
     diskArrays: new DiskArrayCollection(),
     filesystems: new ZfsCollection()
@@ -25,8 +41,8 @@ define(['zpool/model', 'zpool/view', 'disk/model', 'disk/view', 'disk/collection
   zpool.set({
     name: 'tank',
     status: 'ONLINE',
-    size: 3.6750145 * 1024 * 1024 * 1024 * 1024,
-    allocated: 2.1200000 * 1024 * 1024 * 1024 * 1024
+    size: poolSize,
+    allocated: poolSize * Math.random()
   });
   for (r = 0; r <= 3; r++) {
     disks = new DiskCollection();
@@ -36,12 +52,13 @@ define(['zpool/model', 'zpool/view', 'disk/model', 'disk/view', 'disk/collection
     }));
     for (d = 0; d <= 3; d++) {
       disks.add(new Disk({
-        deviceId: "c" + r + "d" + d
+        deviceId: "c" + r + "d" + d,
+        size: diskSizes[r][d]
       }));
     }
   }
   fsList = ['tank', 'tank/exports', 'tank/exports/Audio', 'tank/exports/Audio/Books', 'tank/exports/Audio/Music', 'tank/exports/Downloads', 'tank/exports/Games', 'tank/exports/Video', 'tank/exports/Video/Movies', 'tank/exports/Video/TvShows', 'tank/exports/pxe', 'tank/homes', 'tank/homes/knox', 'tank/homes/knox.old', 'tank/homes/pschultz', 'tank/homes/xbmc'];
-  remainingPoolSize = zpool.get('size');
+  remainingPoolSize = poolSize;
   _ref = _.shuffle(fsList);
   _results = [];
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {

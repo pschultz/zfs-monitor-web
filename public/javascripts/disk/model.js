@@ -12,7 +12,9 @@ define(function() {
     }
 
     DiskModel.prototype.defaults = {
-      status: 'ONLINE'
+      status: 'ONLINE',
+      size: 0,
+      type: ''
     };
 
     return DiskModel;

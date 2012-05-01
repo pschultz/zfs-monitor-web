@@ -22,7 +22,9 @@ script#diskarray-tmpl(type="text/x-jquery-tmpl")
       code zpool status
 
 script#disk-tmpl(type="text/x-jquery-tmpl")
-  ${deviceId}
+  .id ${deviceId}
+  .type ${type}
+  .size ${size}
 
 
 script#filesystem-tmpl(type="text/x-jquery-tmpl")

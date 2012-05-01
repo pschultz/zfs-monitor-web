@@ -7,7 +7,10 @@ define ->
 
     render: =>
       template = $ "#disk-tmpl"
-      html = template.tmpl @model.toJSON()
+      data = @model.toJSON()
+      data.size = humanReadableBytes data.size
+      data.type = data.type || '&nbsp;'
+      html = template.tmpl data
       $(@el).html html
       $(@el).addClass @model.get('status')
       @el

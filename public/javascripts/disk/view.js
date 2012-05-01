@@ -22,9 +22,12 @@ define(function() {
     };
 
     DiskView.prototype.render = function() {
-      var html, template;
+      var data, html, template;
       template = $("#disk-tmpl");
-      html = template.tmpl(this.model.toJSON());
+      data = this.model.toJSON();
+      data.size = humanReadableBytes(data.size);
+      data.type = data.type || '&nbsp;';
+      html = template.tmpl(data);
       $(this.el).html(html);
       $(this.el).addClass(this.model.get('status'));
       return this.el;

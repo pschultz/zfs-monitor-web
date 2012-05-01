@@ -4,6 +4,11 @@ define [
   'zfs/model', 'zfs/view', 'zfs/collection'
   'diskarray/model', 'diskarray/collection'
 ], (ZPool, ZPoolView, Disk, DiskView, DiskCollection, Zfs, ZfsView, ZfsCollection, DiskArray, DiskArrayCollection) ->
+  kilo =        1024
+  mega = kilo * 1024
+  giga = mega * 1024
+  tera = giga * 1024
+
   window.humanReadableBytes = (bytes) ->
     suffixes = ['K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']
     suffix = ''
@@ -14,6 +19,18 @@ define [
 
     size = Math.round(size * 100) / 100
     "#{size} #{suffix}B"
+
+  diskSizes = []
+  poolSize = 0
+  for r in [0..3]
+    diskSizes[r] = []
+    arraySize = Infinity
+    for d in [0..3]
+      size = (Math.random() * .5 + 1.5) * tera
+      diskSizes[r][d] = size
+      arraySize = Math.min(arraySize, size)
+    poolSize += arraySize * 3
+
 
   window.zpool = zpool = new ZPool
     diskArrays:  new DiskArrayCollection()
@@ -28,8 +45,8 @@ define [
   zpool.set
     name: 'tank'
     status: 'ONLINE'
-    size:      3.6750145 * 1024 * 1024 * 1024 * 1024
-    allocated: 2.1200000 * 1024 * 1024 * 1024 * 1024
+    size:      poolSize
+    allocated: poolSize * Math.random()
 
   for r in [0..3]
     disks = new DiskCollection()
@@ -40,6 +57,7 @@ define [
     for d in [0..3]
       disks.add new Disk
         deviceId: "c#{r}d#{d}"
+        size: diskSizes[r][d]
 
   fsList = [
     'tank'
@@ -60,7 +78,7 @@ define [
     'tank/homes/xbmc'
   ]
 
-  remainingPoolSize = zpool.get 'size'
+  remainingPoolSize = poolSize
 
   for fs in _.shuffle(fsList)
     zfsSize = remainingPoolSize / (Math.random() * 5 + 3)
