@@ -5,6 +5,16 @@ events = require 'events'
 running = false
 lastRun = 0
 
+normalizeBytes = (input) ->
+  for suffix, e in [ '', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ]
+    pattern = new RegExp("^([+-]?[\\d.]+)#{suffix}$", 'i')
+
+    if pattern.test input
+      [ nil, numeric ] = pattern.exec input
+      return Math.round(numeric * Math.pow(1024, e))
+
+  return 0
+
 class Query extends events.EventEmitter
   zpoolStatusOutput: ""
   spinningTreshold: [ 60000, 300000 ]
@@ -74,6 +84,8 @@ class Query extends events.EventEmitter
     @newAnalysis = {}
     @queryZpool ->
       self.analyseZpool()
+      self.queryZfs ->
+        self.analyseZfs()
 
 
   queryZpool: (cb) ->
@@ -152,12 +164,11 @@ class Query extends events.EventEmitter
         i = @analyseDiskArrays lines, i+2, pool
         continue
 
-    @oldAnalysis = @newAnalysis
-    @emit 'analyzed', @oldAnalysis
-
   newPool: -> {
     name: 'unnamed'
     status: 'UNKNOWN'
+    size: 0
+    allocated: 0
     scan: []
     diskArrays: []
     filesystems: []
@@ -220,6 +231,71 @@ class Query extends events.EventEmitter
     name: 'unknown'
     status: 'UNKNOWN'
   }
+
+  queryZfs: (cb) ->
+    env = process.env
+    env.PATH += ":" + path.normalize path.join __dirname, '../../zfsmock'
+
+    @zfs = cproc.spawn 'zfs', ['list', '-o', 'name,used,available,refer,usedbysnapshots'], env: env
+
+    @zfsStatusOutput = ""
+    self = @
+
+    @zfs.stdout.setEncoding 'utf8'
+    @zfs.stderr.pipe process.stderr
+    @zfs.stdout.on 'data', (chunk) ->
+      self.zfsStatusOutput += chunk
+    @zfs.on 'exit', (code) ->
+      if code == 0
+        self.zfs = null
+        cb()
+      else self.query()
+
+  analyseZfs: ->
+    lines = @zfsStatusOutput.split /\n/
+    snapshots = {
+      size: 0
+      name: '@snapshots'
+    }
+
+    lastFs = { name: '/' }
+    filesystems = []
+
+    for i in [lines.length - 1 .. 1]
+      line = lines[i]
+      continue unless line
+
+      [ name, used, available, referenced, usedBySnapshot ] = line.split /\s+/
+      [ poolName ] = name.split '/'
+
+      if name isnt poolName and lastFs.name.indexOf(name) is 0
+        continue
+
+      pool = @getPoolByName(poolName)
+      continue unless pool?
+
+      if name == poolName
+        pool.size = normalizeBytes(used) + normalizeBytes(available)
+        snapshots.size += normalizeBytes usedBySnapshot
+        continue
+
+      fsSize = normalizeBytes referenced
+      pool.allocated += fsSize
+
+      fs = {
+        size: fsSize
+        name: name
+      }
+
+      lastFs = fs
+      pool.filesystems.push fs
+
+    @oldAnalysis = @newAnalysis
+    @emit 'analyzed', @oldAnalysis
+
+  getPoolByName: (name) ->
+    for pool in @newAnalysis.pools
+      return pool if pool.name is name
 
 
 module.exports = exports = Query

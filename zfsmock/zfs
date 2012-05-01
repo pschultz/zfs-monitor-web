@@ -2,33 +2,32 @@
 
 function list() {
     cat <<EOS
-NAME                                 USED  AVAIL  REFER  MOUNTPOINT
-pool                                 138K  17.1G  43.4K  /pool
-rpool                               7.18G   102G  45.5K  /rpool
-rpool/ROOT                          5.40G   102G    31K  legacy
-rpool/ROOT/2012-03-updated-install  5.39G   102G  4.65G  /
-rpool/ROOT/openindiana              7.64M   102G  1.86G  /
-rpool/dump                           884M   102G   884M  -
-rpool/export                         101K   102G    32K  /export
-rpool/export/home                     69K   102G    32K  /export/home
-rpool/export/home/pschultz            37K   102G    37K  /export/home/pschultz
-rpool/swap                           940M   103G   133M  -
-tank                                2.87T  2.05T    24K  /tank
-tank/exports                        2.55T  2.05T   261G  /tank/exports
-tank/exports/Audio                  23.4G  2.05T    34K  /tank/exports/Audio
-tank/exports/Audio/Books            14.0G  2.05T  14.0G  /tank/exports/Audio/Books
-tank/exports/Audio/Music            9.44G  2.05T  9.44G  /tank/exports/Audio/Music
-tank/exports/Downloads               418G  2.05T   281G  /tank/exports/Downloads
-tank/exports/Games                   416G  2.05T   416G  /tank/exports/Games
-tank/exports/Video                  1.45T  2.05T    24K  /tank/exports/Video
-tank/exports/Video/Movies            839G  2.05T   797G  /tank/exports/Video/Movies
-tank/exports/Video/TvShows           650G  2.05T   648G  /tank/exports/Video/TvShows
-tank/exports/pxe                    2.07G  2.05T  2.07G  /tank/exports/pxe
-tank/homes                           329G  2.05T    26K  /tank/homes
-tank/homes/knox                     44.1M  2.05T  44.1M  /tank/homes/knox
-tank/homes/knox.old                  328G  2.05T   328G  /tank/homes/knox.old
-tank/homes/pschultz                 11.2M  2.05T  11.2M  /tank/homes/pschultz
-tank/homes/xbmc                      531M  2.05T   531M  /tank/homes/xbmc
+NAME                         USED  AVAIL  REFER  USEDSNAP
+baracuda                    1.65T  1.03T  1.65T         0
+rpool                       15.1G  94.2G    48K         0
+rpool/ROOT                  2.99G  94.2G    31K         0
+rpool/ROOT/april-2012       2.98G  94.2G  1.89G     1.09G
+rpool/ROOT/openindiana      7.49M  94.2G  1.81G         0
+rpool/dump                  5.86G  94.2G  5.86G         0
+rpool/export                 608K  94.2G    32K         0
+rpool/export/home            576K  94.2G    32K         0
+rpool/export/home/pschultz   544K  94.2G   544K         0
+rpool/swap                  6.23G   100G   133M         0
+tank                        1.65T  2.36T  46.4K         0
+tank/exports                1.65T  2.36T   415G         0
+tank/exports/Audio          22.5G  2.36T  46.4K         0
+tank/exports/Audio/Books    13.8G  2.36T  13.8G         0
+tank/exports/Audio/Music    8.67G  2.36T  8.67G         0
+tank/exports/Downloads       211G  2.36T   211G         0
+tank/exports/Stuff          4.70M  2.36T  4.70M         0
+tank/exports/Video          1.01T  2.36T  46.4K         0
+tank/exports/Video/Movies    474G  2.36T   474G         0
+tank/exports/Video/TvShows   564G  2.36T   564G         0
+tank/homes                  1.05G  2.36T  50.9K         0
+tank/homes/knox             2.08M  2.36T  2.08M         0
+tank/homes/knox.old         1.04G  2.36T  1.04G         0
+tank/homes/pschultz         10.9M  2.36T  10.9M         0
+tank/homes/xbmc             43.4K  2.36T  43.4K         0
 EOS
 }
 
@@ -39,6 +38,7 @@ case "$1" in
         status
         ;;
     list)
+        # actually `zfs list -o name,used,available,refer,usedbysnapshots`
         list
         ;;
     *)

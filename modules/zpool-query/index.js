@@ -1,4 +1,4 @@
-var Query, cproc, events, exports, lastRun, path, running,
+var Query, cproc, events, exports, lastRun, normalizeBytes, path, running,
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
@@ -11,6 +11,20 @@ events = require('events');
 running = false;
 
 lastRun = 0;
+
+normalizeBytes = function(input) {
+  var e, nil, numeric, pattern, suffix, _len, _ref, _ref2;
+  _ref = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+  for (e = 0, _len = _ref.length; e < _len; e++) {
+    suffix = _ref[e];
+    pattern = new RegExp("^([+-]?[\\d.]+)" + suffix + "$", 'i');
+    if (pattern.test(input)) {
+      _ref2 = pattern.exec(input), nil = _ref2[0], numeric = _ref2[1];
+      return Math.round(numeric * Math.pow(1024, e));
+    }
+  }
+  return 0;
+};
 
 Query = (function(_super) {
 
@@ -91,7 +105,10 @@ Query = (function(_super) {
     self = this;
     this.newAnalysis = {};
     return this.queryZpool(function() {
-      return self.analyseZpool();
+      self.analyseZpool();
+      return self.queryZfs(function() {
+        return self.analyseZfs();
+      });
     });
   };
 
@@ -120,13 +137,14 @@ Query = (function(_super) {
   };
 
   Query.prototype.analyseZpool = function() {
-    var diskArrayStartPattern, eta, etaPattern, hours, i, line, lines, minutes, nextPoolPattern, nil, percent, pool, poolName, poolScanPattern, poolStatusPattern, progress, progressPattern, type, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
+    var diskArrayStartPattern, eta, etaPattern, hours, i, line, lines, minutes, nextPoolPattern, nil, percent, pool, poolName, poolScanPattern, poolStatusPattern, progress, progressPattern, type, _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _results;
     lines = this.zpoolStatusOutput.split(/\n/);
     nextPoolPattern = /^  pool: (\S+)/;
     poolStatusPattern = /^ state: (\S+)/;
     poolScanPattern = /^  scan: (resilver|scrub) in progress/;
     diskArrayStartPattern = /^        NAME/;
     this.newAnalysis.pools = [];
+    _results = [];
     for (i = 0, _ref = lines.length - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
       line = lines[i];
       if (nextPoolPattern.test(line)) {
@@ -166,16 +184,19 @@ Query = (function(_super) {
       if (diskArrayStartPattern.test(line)) {
         i = this.analyseDiskArrays(lines, i + 2, pool);
         continue;
+      } else {
+        _results.push(void 0);
       }
     }
-    this.oldAnalysis = this.newAnalysis;
-    return this.emit('analyzed', this.oldAnalysis);
+    return _results;
   };
 
   Query.prototype.newPool = function() {
     return {
       name: 'unnamed',
       status: 'UNKNOWN',
+      size: 0,
+      allocated: 0,
       scan: [],
       diskArrays: [],
       filesystems: []
@@ -241,6 +262,76 @@ Query = (function(_super) {
       name: 'unknown',
       status: 'UNKNOWN'
     };
+  };
+
+  Query.prototype.queryZfs = function(cb) {
+    var env, self;
+    env = process.env;
+    env.PATH += ":" + path.normalize(path.join(__dirname, '../../zfsmock'));
+    this.zfs = cproc.spawn('zfs', ['list', '-o', 'name,used,available,refer,usedbysnapshots'], {
+      env: env
+    });
+    this.zfsStatusOutput = "";
+    self = this;
+    this.zfs.stdout.setEncoding('utf8');
+    this.zfs.stderr.pipe(process.stderr);
+    this.zfs.stdout.on('data', function(chunk) {
+      return self.zfsStatusOutput += chunk;
+    });
+    return this.zfs.on('exit', function(code) {
+      if (code === 0) {
+        self.zfs = null;
+        return cb();
+      } else {
+        return self.query();
+      }
+    });
+  };
+
+  Query.prototype.analyseZfs = function() {
+    var available, filesystems, fs, fsSize, i, lastFs, line, lines, name, pool, poolName, referenced, snapshots, used, usedBySnapshot, _ref, _ref2;
+    lines = this.zfsStatusOutput.split(/\n/);
+    snapshots = {
+      size: 0,
+      name: '@snapshots'
+    };
+    lastFs = {
+      name: '/'
+    };
+    filesystems = [];
+    for (i = _ref = lines.length - 1; _ref <= 1 ? i <= 1 : i >= 1; _ref <= 1 ? i++ : i--) {
+      line = lines[i];
+      if (!line) continue;
+      _ref2 = line.split(/\s+/), name = _ref2[0], used = _ref2[1], available = _ref2[2], referenced = _ref2[3], usedBySnapshot = _ref2[4];
+      poolName = name.split('/')[0];
+      if (name !== poolName && lastFs.name.indexOf(name) === 0) continue;
+      pool = this.getPoolByName(poolName);
+      if (pool == null) continue;
+      if (name === poolName) {
+        pool.size = normalizeBytes(used) + normalizeBytes(available);
+        snapshots.size += normalizeBytes(usedBySnapshot);
+        continue;
+      }
+      fsSize = normalizeBytes(referenced);
+      pool.allocated += fsSize;
+      fs = {
+        size: fsSize,
+        name: name
+      };
+      lastFs = fs;
+      pool.filesystems.push(fs);
+    }
+    this.oldAnalysis = this.newAnalysis;
+    return this.emit('analyzed', this.oldAnalysis);
+  };
+
+  Query.prototype.getPoolByName = function(name) {
+    var pool, _i, _len, _ref;
+    _ref = this.newAnalysis.pools;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      pool = _ref[_i];
+      if (pool.name === name) return pool;
+    }
   };
 
   return Query;
