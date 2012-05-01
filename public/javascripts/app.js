@@ -1,6 +1,18 @@
 
 define(['zpool/model', 'zpool/view', 'disk/model', 'disk/view', 'disk/collection', 'zfs/model', 'zfs/view', 'zfs/collection', 'diskarray/model', 'diskarray/collection'], function(ZPool, ZPoolView, Disk, DiskView, DiskCollection, Zfs, ZfsView, ZfsCollection, DiskArray, DiskArrayCollection) {
-  var d, disks, fs, fsList, r, zpool, zpoolView, _i, _len, _results;
+  var d, disks, fs, fsList, r, remainingPoolSize, zfsSize, zpool, zpoolView, _i, _len, _ref, _results;
+  window.humanReadableBytes = function(bytes) {
+    var size, suffix, suffixes;
+    suffixes = ['K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+    suffix = '';
+    size = bytes;
+    while (size > 1024 && suffixes.length) {
+      size /= 1024.0;
+      suffix = suffixes.shift();
+    }
+    size = Math.round(size * 100) / 100;
+    return "" + size + " " + suffix + "B";
+  };
   window.zpool = zpool = new ZPool({
     diskArrays: new DiskArrayCollection(),
     filesystems: new ZfsCollection()
@@ -13,8 +25,8 @@ define(['zpool/model', 'zpool/view', 'disk/model', 'disk/view', 'disk/collection
   zpool.set({
     name: 'tank',
     status: 'ONLINE',
-    size: 3.0 * 1024 * 1024 * 1024 * 1024,
-    allocated: 2.1 * 1024 * 1024 * 1024 * 1024
+    size: 3.6750145 * 1024 * 1024 * 1024 * 1024,
+    allocated: 2.1200000 * 1024 * 1024 * 1024 * 1024
   });
   for (r = 0; r <= 3; r++) {
     disks = new DiskCollection();
