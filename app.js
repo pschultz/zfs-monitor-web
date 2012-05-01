@@ -1,4 +1,4 @@
-var app, express, io, routes;
+var app, express, io, query, routes;
 
 express = require('express');
 
@@ -36,3 +36,33 @@ app.get('/', routes.index);
 app.listen(3000, function() {
   return console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
+
+query = new (require('./modules/zpool-query'));
+
+query.on('analyzed', function(analysis) {
+  var p, _i, _len, _ref, _results;
+  _ref = analysis.pools;
+  _results = [];
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    p = _ref[_i];
+    _results.push(console.log(p));
+  }
+  return _results;
+});
+
+query.start();
+
+/*
+query.on 'analyzed', (zpools) ->
+  io.broadcast update: zpools
+
+clients = {}
+
+io.sockets.on 'connection', (socket) ->
+  clients[socket.id] = socket
+  query.keepItComin()
+
+  socket.on 'disconnect', ->
+    delete clients[this.id]
+    query.slowDown() if not Object.keys(clients).length
+*/

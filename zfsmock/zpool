@@ -32,14 +32,26 @@ config:
 
 errors: No known data errors
 
-  pool: rpool
+  pool: r1
  state: ONLINE
   scan: none requested
 config:
 
-        NAME        STATE     READ WRITE CKSUM
-        rpool       ONLINE       0     0     0
-          c2d0s0    ONLINE       0     0     0
+        NAME             STATE     READ WRITE CKSUM
+        r1               ONLINE       0     0     0
+          /dev/lofi/1    ONLINE       0     0     0
+          /dev/lofi/2    ONLINE       0     0     0
+          raidz1-2       ONLINE       0     0     0
+            /dev/lofi/3  ONLINE       0     0     0
+            /dev/lofi/4  ONLINE       0     0     0
+          /dev/lofi/5    ONLINE       0     0     0
+          /dev/lofi/6    ONLINE       0     0     0
+        logs
+          /dev/lofi/7    ONLINE       0     0     0
+        cache
+          /dev/lofi/8    ONLINE       0     0     0
+        spares
+          /dev/lofi/9    AVAIL   
 
 errors: No known data errors
 
@@ -70,7 +82,7 @@ errors: 2564646 data errors, use '-v' for a list
 config:
 
         NAME        STATE     READ WRITE CKSUM
-        tank        ONLINE       0     0     0
+        scrubbing   ONLINE       0     0     0
           raidz1-0  ONLINE       0     0     0
             c4d0    ONLINE       0     0     0
             c4d1    ONLINE       0     0     0
