@@ -9,6 +9,7 @@ define(['zfs/view'], function(ZfsView) {
     __extends(ZfsDistributionView, _super);
 
     function ZfsDistributionView() {
+      this.renderChart = __bind(this.renderChart, this);
       this.render = __bind(this.render, this);
       ZfsDistributionView.__super__.constructor.apply(this, arguments);
     }
@@ -43,13 +44,19 @@ define(['zfs/view'], function(ZfsView) {
             }
           }
         },
-        series: []
+        series: [
+          {
+            type: 'pie',
+            name: 'Pool Distribution',
+            data: []
+          }
+        ]
       };
     };
 
     ZfsDistributionView.prototype.initialize = function() {
       this.chartId = "" + this.model.cid + "-distribution-chart";
-      return this.model.get('filesystems').on('add remove change', this.render);
+      return this.model.get('filesystems').on('add remove change', this.renderChart);
     };
 
     ZfsDistributionView.prototype.render = function() {
@@ -61,30 +68,35 @@ define(['zfs/view'], function(ZfsView) {
       return this.el;
     };
 
-    ZfsDistributionView.prototype.renderChart = function(chartDefinition) {
-      var chartContainer, poolSize;
-      chartContainer = this.$("#" + this.chartId);
-      if (!chartContainer.length) {
-        chartContainer = $("<div id='" + this.chartId + "'></div>");
-        chartContainer.addClass('capacity pie chart');
-        this.$(".content").append(chartContainer);
+    ZfsDistributionView.prototype.renderChart = function() {
+      if (!this.model.get('size')) return;
+      if (!((this.chartContainer != null) && (this.chart != null))) {
+        this.createChart();
       }
-      chartDefinition.chart.renderTo = chartContainer[0];
-      poolSize = this.model.get('size');
-      if (poolSize) chartDefinition.series.push(this.getChartSeries());
-      return new Highcharts.Chart(chartDefinition);
+      return this.updateChart();
     };
 
-    ZfsDistributionView.prototype.getChartSeries = function(poolSize) {
-      var othersSize, poolName, poolPattern, series;
+    ZfsDistributionView.prototype.createChart = function() {
+      var chartDefinition;
+      this.chartContainer = this.$("#" + this.chartId);
+      this.chartContainer = $("<div id='" + this.chartId + "'></div>");
+      this.chartContainer.addClass('distribution pie chart');
+      this.$(".content").append(this.chartContainer);
+      chartDefinition = this.chartConfig();
+      chartDefinition.chart.renderTo = this.chartContainer[0];
+      return this.chart = new Highcharts.Chart(chartDefinition);
+    };
+
+    ZfsDistributionView.prototype.updateChart = function() {
+      return this.chart.series[0].setData(this.getChartData());
+    };
+
+    ZfsDistributionView.prototype.getChartData = function() {
+      var data, othersSize, poolName, poolPattern, poolSize;
+      data = [];
       poolSize = this.model.get('size');
       poolName = this.model.get('name');
       poolPattern = new RegExp("^" + poolName + "/?");
-      series = {
-        type: 'pie',
-        name: 'Pool Distribution',
-        data: []
-      };
       othersSize = 0;
       this.model.get('filesystems').each(function(zfs) {
         var fsName, poolPercentage, zfsSize;
@@ -92,14 +104,14 @@ define(['zfs/view'], function(ZfsView) {
         fsName = zfs.get('name').replace(poolPattern, '');
         if (!fsName.length) fsName = '/';
         poolPercentage = zfsSize / poolSize;
-        if (poolPercentage < .05) {
+        if (poolPercentage < .03) {
           return othersSize += zfsSize;
         } else {
-          return series.data.push([fsName, zfsSize / poolSize]);
+          return data.push([fsName, zfsSize]);
         }
       });
-      if (othersSize) series.data.push(['other', othersSize / poolSize]);
-      return series;
+      if (othersSize) data.push(['<i>other</i>', othersSize]);
+      return data;
     };
 
     return ZfsDistributionView;

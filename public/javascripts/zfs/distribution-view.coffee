@@ -27,11 +27,15 @@ define ['zfs/view'], (ZfsView) ->
           },
         },
       },
-      series: []
+      series: [
+        type: 'pie',
+        name: 'Pool Distribution',
+        data: []
+      ]
 
     initialize: ->
       @chartId = "#{@model.cid}-distribution-chart"
-      @model.get('filesystems').on 'add remove change', @render
+      @model.get('filesystems').on 'add remove change', @renderChart
 
     render: =>
       template = $ "#zfs-distribution-tmpl"
@@ -42,48 +46,49 @@ define ['zfs/view'], (ZfsView) ->
 
       @el
 
-    renderChart: (chartDefinition) ->
-      chartContainer = @$("##{@chartId}")
-      unless chartContainer.length
-        chartContainer = $ "<div id='#{@chartId}'></div>"
-        chartContainer.addClass 'capacity pie chart'
-        @$(".content").append chartContainer
+    renderChart: =>
+      return unless @model.get('size')
 
-      chartDefinition.chart.renderTo = chartContainer[0]
+      @createChart() unless @chartContainer? && @chart?
+      @updateChart()
 
-      poolSize = @model.get 'size'
-      if poolSize
-        chartDefinition.series.push @getChartSeries()
+    createChart: ->
+      @chartContainer = @$("##{@chartId}")
 
-      new Highcharts.Chart(chartDefinition)
+      @chartContainer = $ "<div id='#{@chartId}'></div>"
+      @chartContainer.addClass 'distribution pie chart'
+      @$(".content").append @chartContainer
 
-    getChartSeries: (poolSize) ->
+      chartDefinition = @chartConfig()
+      chartDefinition.chart.renderTo = @chartContainer[0]
+
+      @chart = new Highcharts.Chart(chartDefinition)
+
+    updateChart: ->
+      @chart.series[0].setData @getChartData()
+
+    getChartData: ->
+      data = []
       poolSize = @model.get 'size'
       poolName = @model.get 'name'
       poolPattern = new RegExp("^#{poolName}/?")
-
-      series =
-        type: 'pie',
-        name: 'Pool Distribution',
-        data: []
-
       othersSize = 0
+
       @model.get('filesystems').each (zfs) ->
         zfsSize = zfs.get 'size'
         fsName = zfs.get('name').replace(poolPattern, '')
         fsName = '/' unless fsName.length
 
-
         poolPercentage = zfsSize / poolSize
 
-        if poolPercentage < .05
+        if poolPercentage < .03
           othersSize += zfsSize
         else
-          series.data.push [fsName, zfsSize / poolSize],
+          data.push [fsName, zfsSize],
 
       if(othersSize)
-          series.data.push ['other', othersSize / poolSize],
+          data.push ['<i>other</i>', othersSize],
 
-      series
+      data
 
   ZfsDistributionView
