@@ -5,6 +5,11 @@ events = require 'events'
 running = false
 lastRun = 0
 
+Pool = require './pool'
+Disk = require './disk'
+Diskarray = require './array'
+Filesystem = require './filesystem'
+
 normalizeBytes = (input) ->
   for suffix, e in [ '', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ]
     pattern = new RegExp("^([+-]?[\\d.]+)#{suffix}$", 'i')
@@ -121,8 +126,7 @@ class Query extends events.EventEmitter
 
       if nextPoolPattern.test(line)
         [ nil, poolName ] = nextPoolPattern.exec line
-        pool = @newPool()
-        pool.name = poolName
+        pool = new Pool poolName
         @newAnalysis.pools.push pool
         continue
 
@@ -164,16 +168,6 @@ class Query extends events.EventEmitter
         i = @analyseDiskArrays lines, i+2, pool
         continue
 
-  newPool: -> {
-    name: 'unnamed'
-    status: 'UNKNOWN'
-    size: 0
-    allocated: 0
-    scan: []
-    diskArrays: []
-    filesystems: []
-  }
-
   analyseDiskArrays: (lines, i, pool) ->
     linePattern = /^ +(\S+) *(\S+)?/
     specialDeviceNamePattern = /^((raidz\d|mirror|logs|spares|cache)\S*)/
@@ -203,9 +197,7 @@ class Query extends events.EventEmitter
         lastIndentLevel = indentLevel
         continue if diskArray.type isnt 'striped'
 
-      disk = @newDisk()
-      disk.name = deviceName
-      disk.status = deviceStatus
+      disk = new Disk deviceName, deviceStatus
       diskArray.disks.push disk
 
       lastIndentLevel = indentLevel
@@ -214,23 +206,11 @@ class Query extends events.EventEmitter
     i
 
   addDiskarray: (name, type, status = '', pool) ->
-    diskArray = @newDiskarray()
-    diskArray.name = if type == 'striped' then '' else name
-    diskArray.type = type
-    diskArray.status = status
+    name = if type == 'striped' then '' else name
+    diskArray = new Diskarray name, type, status
+
     pool.diskArrays.push diskArray
     diskArray
-
-  newDiskarray: -> {
-    name: 'unnamed'
-    type: 'unknown'
-    disks: []
-  }
-
-  newDisk: -> {
-    name: 'unknown'
-    status: 'UNKNOWN'
-  }
 
   queryZfs: (cb) ->
     env = process.env
@@ -282,10 +262,7 @@ class Query extends events.EventEmitter
       fsSize = normalizeBytes referenced
       pool.allocated += fsSize
 
-      fs = {
-        size: fsSize
-        name: name
-      }
+      fs = new Filesystem name, fsSize
 
       lastFs = fs
       pool.filesystems.push fs

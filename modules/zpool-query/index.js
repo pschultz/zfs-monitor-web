@@ -1,4 +1,4 @@
-var Query, cproc, events, exports, lastRun, normalizeBytes, path, running,
+var Disk, Diskarray, Filesystem, Pool, Query, cproc, events, exports, lastRun, normalizeBytes, path, running,
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
@@ -11,6 +11,14 @@ events = require('events');
 running = false;
 
 lastRun = 0;
+
+Pool = require('./pool');
+
+Disk = require('./disk');
+
+Diskarray = require('./array');
+
+Filesystem = require('./filesystem');
 
 normalizeBytes = function(input) {
   var e, nil, numeric, pattern, suffix, _len, _ref, _ref2;
@@ -149,8 +157,7 @@ Query = (function(_super) {
       line = lines[i];
       if (nextPoolPattern.test(line)) {
         _ref2 = nextPoolPattern.exec(line), nil = _ref2[0], poolName = _ref2[1];
-        pool = this.newPool();
-        pool.name = poolName;
+        pool = new Pool(poolName);
         this.newAnalysis.pools.push(pool);
         continue;
       }
@@ -191,18 +198,6 @@ Query = (function(_super) {
     return _results;
   };
 
-  Query.prototype.newPool = function() {
-    return {
-      name: 'unnamed',
-      status: 'UNKNOWN',
-      size: 0,
-      allocated: 0,
-      scan: [],
-      diskArrays: [],
-      filesystems: []
-    };
-  };
-
   Query.prototype.analyseDiskArrays = function(lines, i, pool) {
     var deviceName, deviceStatus, deviceType, disk, diskArray, indentLevel, isSpecialDevice, lastIndentLevel, leadingSpaces, line, linePattern, nil, specialDeviceNamePattern, _ref, _ref2, _ref3;
     linePattern = /^ +(\S+) *(\S+)?/;
@@ -228,9 +223,7 @@ Query = (function(_super) {
         lastIndentLevel = indentLevel;
         if (diskArray.type !== 'striped') continue;
       }
-      disk = this.newDisk();
-      disk.name = deviceName;
-      disk.status = deviceStatus;
+      disk = new Disk(deviceName, deviceStatus);
       diskArray.disks.push(disk);
       lastIndentLevel = indentLevel;
       continue;
@@ -241,27 +234,10 @@ Query = (function(_super) {
   Query.prototype.addDiskarray = function(name, type, status, pool) {
     var diskArray;
     if (status == null) status = '';
-    diskArray = this.newDiskarray();
-    diskArray.name = type === 'striped' ? '' : name;
-    diskArray.type = type;
-    diskArray.status = status;
+    name = type === 'striped' ? '' : name;
+    diskArray = new Diskarray(name, type, status);
     pool.diskArrays.push(diskArray);
     return diskArray;
-  };
-
-  Query.prototype.newDiskarray = function() {
-    return {
-      name: 'unnamed',
-      type: 'unknown',
-      disks: []
-    };
-  };
-
-  Query.prototype.newDisk = function() {
-    return {
-      name: 'unknown',
-      status: 'UNKNOWN'
-    };
   };
 
   Query.prototype.queryZfs = function(cb) {
@@ -314,10 +290,7 @@ Query = (function(_super) {
       }
       fsSize = normalizeBytes(referenced);
       pool.allocated += fsSize;
-      fs = {
-        size: fsSize,
-        name: name
-      };
+      fs = new Filesystem(name, fsSize);
       lastFs = fs;
       pool.filesystems.push(fs);
     }
