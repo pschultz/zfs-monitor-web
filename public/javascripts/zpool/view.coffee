@@ -1,4 +1,4 @@
-define ['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zfs/filesystem-view'], (ZPoolCaptionView, DiskarrayView, IostatsView, ScanView, FilesystemView) ->
+define ['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zfs/filesystem-view', 'empty-widget-view'], (ZPoolCaptionView, DiskarrayView, IostatsView, ScanView, FilesystemView, EmptyWidgetView) ->
   class ZPoolView extends Backbone.View
     initialize: ->
       return unless @model
@@ -11,7 +11,7 @@ define ['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zf
       $(@el).html html
 
       @renderCaption()
-      @renderIostats()
+      @renderTail() for i in [1..4]
       @model.get('diskArrays').each @renderDiskarray
       @renderScans()
       @renderFilesystems()
@@ -41,12 +41,12 @@ define ['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zf
         id: diskarray.cid
         className: 'diskarray widget c1 r1'
 
-      @$(".iostats").before view.render()
+      @$(".empty.widget").first().before view.render()
+      @$(".empty.widget").last().remove()
 
-    renderIostats: =>
-      view = new IostatsView
-        model: @model
-        className: 'iostats widget auto-width r1'
+    renderTail: =>
+      view = new EmptyWidgetView
+        className: 'empty widget c1 r1'
 
       @$(".diskarrays").append view.render()
 
