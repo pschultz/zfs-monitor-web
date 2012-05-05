@@ -23,13 +23,13 @@ define [ 'zpool/model', 'zpool/view', 'socket-io' ], (ZPool, ZPoolView, socket) 
   socket.on 'snapshot', (snapshot) ->
     return unless snapshot.zpools? && snapshot.zpools.length
 
-    poolData = snapshot.zpools[1]
-    console.log poolData
+    for poolData, i in snapshot.zpools
+      console.log poolData
 
-    window.zpool = zpool = ZPool::createFromMonitorData poolData
+      window.zpool = zpool = ZPool::createFromMonitorData poolData
 
-    zpoolView = new ZPoolView
-      model: zpool
-      el: $("#pool")
+      zpoolView = new ZPoolView
+        model: zpool
+        class: $("pool")
 
-    zpoolView.render()
+      $("#root").html zpoolView.render() if i is 1

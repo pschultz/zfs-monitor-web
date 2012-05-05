@@ -27,8 +27,7 @@ define(['zfs/capacity-view', 'zfs/distribution-view'], function(ZfsCapacityView,
       var view;
       view = new ZfsCapacityView({
         model: this.model,
-        id: 'zfs-capacity',
-        className: 'widget c2 r2'
+        className: 'zfs-capacity widget c2 r2'
       });
       return $(this.el).append(view.render());
     };
@@ -38,8 +37,7 @@ define(['zfs/capacity-view', 'zfs/distribution-view'], function(ZfsCapacityView,
       view = new ZfsDistributionView({
         collection: this.model.get('filesystems'),
         model: this.model,
-        id: 'zfs-distribution',
-        className: 'widget c2 r2'
+        className: 'zfs-distribution widget c2 r2'
       });
       return $(this.el).append(view.render());
     };

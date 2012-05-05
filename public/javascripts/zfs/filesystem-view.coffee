@@ -13,16 +13,14 @@ define ['zfs/capacity-view', 'zfs/distribution-view'], (ZfsCapacityView, ZfsDist
     renderZfsCapacity: ->
       view = new ZfsCapacityView
         model: @model
-        id: 'zfs-capacity'
-        className: 'widget c2 r2'
+        className: 'zfs-capacity widget c2 r2'
       $(@el).append view.render()
 
     renderZfsDistribution: ->
       view = new ZfsDistributionView
         collection: @model.get 'filesystems'
         model: @model
-        id: 'zfs-distribution'
-        className: 'widget c2 r2'
+        className: 'zfs-distribution widget c2 r2'
       $(@el).append view.render()
 
 

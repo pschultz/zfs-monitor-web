@@ -1,10 +1,10 @@
 /* line 2, ../../src/public/stylesheets/pool-caption.sass */
-#pool-caption h1 {
+.pool-caption h1 {
   font-size: 125%;
   padding: 0.4em;
   margin-bottom: 1em;
 }
 /* line 6, ../../src/public/stylesheets/pool-caption.sass */
-#pool-caption h1 .status {
+.pool-caption h1 .status {
   float: right;
 }

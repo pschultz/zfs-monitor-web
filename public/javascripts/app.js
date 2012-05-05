@@ -22,15 +22,24 @@ define(['zpool/model', 'zpool/view', 'socket-io'], function(ZPool, ZPoolView, so
   });
   socket.emit('snapshot');
   return socket.on('snapshot', function(snapshot) {
-    var poolData, zpool, zpoolView;
+    var i, poolData, zpool, zpoolView, _len, _ref, _results;
     if (!((snapshot.zpools != null) && snapshot.zpools.length)) return;
-    poolData = snapshot.zpools[1];
-    console.log(poolData);
-    window.zpool = zpool = ZPool.prototype.createFromMonitorData(poolData);
-    zpoolView = new ZPoolView({
-      model: zpool,
-      el: $("#pool")
-    });
-    return zpoolView.render();
+    _ref = snapshot.zpools;
+    _results = [];
+    for (i = 0, _len = _ref.length; i < _len; i++) {
+      poolData = _ref[i];
+      console.log(poolData);
+      window.zpool = zpool = ZPool.prototype.createFromMonitorData(poolData);
+      zpoolView = new ZPoolView({
+        model: zpool,
+        "class": $("pool")
+      });
+      if (i === 1) {
+        _results.push($("#root").html(zpoolView.render()));
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
   });
 });

@@ -45,8 +45,7 @@ define(['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zf
       var captionView;
       captionView = new ZPoolCaptionView({
         model: this.model,
-        id: 'pool-caption',
-        className: 'widget head r1'
+        className: 'pool-caption widget head r1'
       });
       return $(this.el).prepend(captionView.render());
     };

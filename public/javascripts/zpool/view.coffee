@@ -29,8 +29,7 @@ define ['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zf
     renderCaption: =>
       captionView = new ZPoolCaptionView
         model: @model
-        id: 'pool-caption'
-        className: 'widget head r1'
+        className: 'pool-caption widget head r1'
       $(@el).prepend captionView.render()
 
     renderDiskarray: (diskarray) =>
