@@ -98,7 +98,7 @@ define(['zpool/model', 'zpool/view', 'scan/model', 'scan/collection', 'disk/mode
     progress: .99
   }));
   socket = io.connect('/');
-  return socket.on('update:pool', function(data) {
-    return console.log(data);
+  return socket.on('*', function(event, data) {
+    return console.log(arguments);
   });
 });

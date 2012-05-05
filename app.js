@@ -1,4 +1,4 @@
-var app, clients, express, io, query, routes;
+var Monitor, app, clients, express, io, routes;
 
 express = require('express');
 
@@ -39,23 +39,19 @@ app.listen(3000, function() {
   return console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
 
-query = new (require('./modules/zpool-query'));
-
-query.on('analyzed', function(zpools) {
-  return io.sockets.emit('update:pool', zpools);
-});
+Monitor = require('zfs-monitor');
 
 clients = {};
 
 io.sockets.on('connection', function(socket) {
   clients[socket.id] = socket;
-  query.keepItComin();
-  query.on('analyzed', function(zpools) {
-    return socket.emit('update:pool', zpools);
+  Monitor.on('*', function() {
+    socket.emit('*', arguments[0], arguments[1]);
+    return socket.emit(arguments[0], arguments[1]);
   });
-  query.start();
+  Monitor.startMonitoring();
   return socket.on('disconnect', function() {
     delete clients[this.id];
-    if (!Object.keys(clients).length) return query.slowDown();
+    if (!Object.keys(clients).length) return Monitor.stopMonitoring();
   });
 });

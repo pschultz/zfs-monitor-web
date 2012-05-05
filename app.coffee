@@ -27,22 +27,19 @@ app.get '/', routes.index
 app.listen 3000, ->
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env)
 
-query = new (require './modules/zpool-query')
-
-query.on 'analyzed', (zpools) ->
-  io.sockets.emit 'update:pool', zpools
+Monitor = require 'zfs-monitor'
 
 clients = {}
 
 io.sockets.on 'connection', (socket) ->
   clients[socket.id] = socket
-  query.keepItComin()
 
-  query.on 'analyzed', (zpools) ->
-    socket.emit 'update:pool', zpools
+  Monitor.on '*', ->
+    socket.emit '*', arguments[0], arguments[1]
+    socket.emit arguments[0], arguments[1]
 
-  query.start()
+  Monitor.startMonitoring()
 
   socket.on 'disconnect', ->
     delete clients[this.id]
-    query.slowDown() if not Object.keys(clients).length
+    Monitor.stopMonitoring() if not Object.keys(clients).length

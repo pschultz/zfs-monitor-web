@@ -9,7 +9,6 @@ define ['zpool/model', 'disk/view'], (ZPool, DiskView) ->
 
     render: =>
       template = $ "#zpool-caption-tmpl"
-      console.log @model.toJSON()
       html = template.tmpl @model.toJSON()
       $(@el).html html
       @onChangeStatus()
@@ -26,7 +25,6 @@ define ['zpool/model', 'disk/view'], (ZPool, DiskView) ->
         .addClass(@model.get 'status')
 
     renderDisk: (disk) =>
-      console.log disk
       type = disk.get 'type'
       return unless type
 

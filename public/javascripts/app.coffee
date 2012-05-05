@@ -117,5 +117,5 @@ define [
     progress: .99
 
   socket = io.connect '/'
-  socket.on 'update:pool', (data) ->
-    console.log data
+  socket.on '*', (event, data) ->
+    console.log arguments

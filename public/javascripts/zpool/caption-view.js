@@ -26,7 +26,6 @@ define(['zpool/model', 'disk/view'], function(ZPool, DiskView) {
     ZPoolCaptionView.prototype.render = function() {
       var html, template;
       template = $("#zpool-caption-tmpl");
-      console.log(this.model.toJSON());
       html = template.tmpl(this.model.toJSON());
       $(this.el).html(html);
       this.onChangeStatus();
@@ -44,7 +43,6 @@ define(['zpool/model', 'disk/view'], function(ZPool, DiskView) {
 
     ZPoolCaptionView.prototype.renderDisk = function(disk) {
       var type, view;
-      console.log(disk);
       type = disk.get('type');
       if (!type) return;
       view = new DiskView({

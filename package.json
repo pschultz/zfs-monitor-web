@@ -1,5 +1,5 @@
 {
-    "name": "zfs-monitor"
+    "name": "zfs-monitor-web"
   , "description": "Webbased dashboard style monitoring for ZFS and zpools"
   , "author": {
       "name": "Peter Schultz"
