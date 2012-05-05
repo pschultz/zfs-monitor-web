@@ -18,3 +18,8 @@
 .diskarrays .type {
   display: none;
 }
+
+/* line 15, ../../src/public/stylesheets/diskarray.sass */
+.diskarray.widget header small {
+  float: right;
+}
