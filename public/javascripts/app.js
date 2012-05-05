@@ -1,11 +1,10 @@
 
-define(['zpool/model', 'zpool/view', 'scan/model', 'scan/collection', 'disk/model', 'disk/view', 'disk/collection', 'zfs/model', 'zfs/view', 'zfs/collection', 'diskarray/model', 'diskarray/collection'], function(ZPool, ZPoolView, Scan, ScanCollection, Disk, DiskView, DiskCollection, Zfs, ZfsView, ZfsCollection, DiskArray, DiskArrayCollection) {
-  var arraySize, d, diskSizes, disks, fs, fsList, giga, kilo, mega, poolSize, r, remainingPoolSize, size, socket, tera, zfsSize, zpool, zpoolView, _i, _len, _ref;
+define(['zpool/model', 'zpool/view', 'scan/model', 'scan/collection', 'disk/model', 'disk/view', 'disk/collection', 'zfs/model', 'zfs/view', 'zfs/collection', 'diskarray/model', 'diskarray/collection', 'socket-io'], function(ZPool, ZPoolView, Scan, ScanCollection, Disk, DiskView, DiskCollection, Zfs, ZfsView, ZfsCollection, DiskArray, DiskArrayCollection, socket) {
+  var arraySize, d, diskSizes, disks, fs, fsList, giga, kilo, mega, poolSize, r, remainingPoolSize, size, tera, zfsSize, zpool, zpoolView, _i, _len, _ref;
   kilo = 1024;
   mega = kilo * 1024;
   giga = mega * 1024;
   tera = giga * 1024;
-  socket = io.connect('/');
   socket.on('*', function(event, data) {
     return console.log(arguments);
   });

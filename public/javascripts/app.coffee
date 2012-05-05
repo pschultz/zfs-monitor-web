@@ -4,13 +4,14 @@ define [
   'disk/model', 'disk/view', 'disk/collection'
   'zfs/model', 'zfs/view', 'zfs/collection'
   'diskarray/model', 'diskarray/collection'
-], (ZPool, ZPoolView, Scan, ScanCollection, Disk, DiskView, DiskCollection, Zfs, ZfsView, ZfsCollection, DiskArray, DiskArrayCollection) ->
+  'socket-io'
+], (ZPool, ZPoolView, Scan, ScanCollection, Disk, DiskView, DiskCollection, Zfs, ZfsView, ZfsCollection, DiskArray, DiskArrayCollection, socket) ->
   kilo =        1024
   mega = kilo * 1024
   giga = mega * 1024
   tera = giga * 1024
 
-  socket = io.connect '/'
+  #socket = io.connect '/'
   socket.on '*', (event, data) ->
     console.log arguments
 
