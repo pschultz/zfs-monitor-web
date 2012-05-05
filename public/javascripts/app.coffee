@@ -30,34 +30,18 @@ define [
   socket.on 'snapshot', (snapshot) ->
     return unless snapshot.zpools? && snapshot.zpools.length
 
-    poolData = snapshot.zpools[3]
+    poolData = snapshot.zpools[1]
     console.log poolData
 
-    window.zpool = zpool = new ZPool
-      id:          poolData.id
-      name:        poolData.name
-      status:      poolData.status
-      size:        poolData.size
-      allocated:   poolData.allocated
-      diskArrays:  new DiskArrayCollection()
-      spareDisks:  new DiskCollection()
-      logDisks:    new DiskCollection()
-      cacheDisks:  new DiskCollection()
-      filesystems: new ZfsCollection()
-      scans:       new ScanCollection()
+    window.zpool = zpool = ZPool::createFromMonitorData poolData
 
     for zfsData in poolData.filesystems
-      zpool.get('filesystems').add new Zfs
-        id:   zfsData.id
-        name: zfsData.name
-        size: zfsData.size
+      zfs = Zfs::createFromMonitorData zfsData
+      zpool.get('filesystems').add zfs
 
     for scanData in poolData.scans
-      zpool.get('scans').add new Scan
-        id:       scanData.id
-        type:     scanData.type
-        eta:      scanData.eta
-        progress: scanData.progress
+      scan = Scan::createFromMonitorData scanData
+      zpool.get('scans').add scan
 
     for arrayData, r in poolData.diskArrays
       disks = null
@@ -70,21 +54,14 @@ define [
         disks = zpool.get "#{type}Disks"
       else
         type = ''
-        disks = new DiskCollection()
-        zpool.get('diskArrays').add new DiskArray
-          id:     arrayData.id
-          name:   arrayData.name
-          type:   arrayData.type
-          status: arrayData.status
-          disks:  disks
+        diskarray = DiskArray::createFromMonitorData arrayData
+        zpool.get('diskArrays').add diskarray
+        disks = diskarray.get 'disks'
 
       for diskData, d in arrayData.disks
-        disks.add new Disk
-          id:       diskData.id
-          status:   diskData.status
-          type:     type
-          size:     diskData.size
-          deviceId: diskData.name
+        diskData.type = type
+        disk = Disk::createFromMonitorData diskData
+        disks.add disk
 
     zpoolView = new ZPoolView
       model: zpool

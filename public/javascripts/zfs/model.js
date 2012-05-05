@@ -11,6 +11,20 @@ define(['dataset/model'], function(Dataset) {
       ZfsModel.__super__.constructor.apply(this, arguments);
     }
 
+    ZfsModel.prototype.createFromMonitorData = function(poolData) {
+      var data;
+      data = ZfsModel.prototype.convertMonitorData(poolData);
+      return new ZfsModel(data);
+    };
+
+    ZfsModel.prototype.convertMonitorData = function(poolData) {
+      return {
+        id: poolData.id,
+        name: poolData.name,
+        size: poolData.size
+      };
+    };
+
     ZfsModel.prototype.defaults = {
       size: 0,
       free: 0,

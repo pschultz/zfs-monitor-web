@@ -11,10 +11,20 @@ define(function() {
       DiskModel.__super__.constructor.apply(this, arguments);
     }
 
-    DiskModel.prototype.defaults = {
-      status: 'ONLINE',
-      size: 0,
-      type: ''
+    DiskModel.prototype.createFromMonitorData = function(poolData) {
+      var data;
+      data = DiskModel.prototype.convertMonitorData(poolData);
+      return new DiskModel(data);
+    };
+
+    DiskModel.prototype.convertMonitorData = function(poolData) {
+      return {
+        id: poolData.id,
+        status: poolData.status,
+        type: poolData.type,
+        size: poolData.size,
+        deviceId: poolData.name
+      };
     };
 
     return DiskModel;

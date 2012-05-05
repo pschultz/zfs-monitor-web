@@ -11,11 +11,19 @@ define(function() {
       ScanModel.__super__.constructor.apply(this, arguments);
     }
 
-    ScanModel.prototype.defaults = {
-      type: 'unknown',
-      eta: 0,
-      progress: 0,
-      lastResult: ''
+    ScanModel.prototype.createFromMonitorData = function(poolData) {
+      var data;
+      data = ScanModel.prototype.convertMonitorData(poolData);
+      return new ScanModel(data);
+    };
+
+    ScanModel.prototype.convertMonitorData = function(poolData) {
+      return {
+        id: poolData.id,
+        type: poolData.type,
+        eta: poolData.eta,
+        progress: poolData.progress
+      };
     };
 
     return ScanModel;

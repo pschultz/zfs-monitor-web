@@ -1,8 +1,15 @@
 define ['disk/collection'], (DiskCollection) ->
-  class DiskArrayModel extends Backbone.Model
-    defaults:
-      type: 'raidz'
-      name: 'raidz-0'
-      disks: null
+  class DiskarrayModel extends Backbone.Model
+    createFromMonitorData: (poolData) ->
+      data = DiskarrayModel::convertMonitorData poolData
+      data.disks = new DiskCollection()
 
-  DiskArrayModel
+      return new DiskarrayModel data
+
+    convertMonitorData: (poolData) ->
+      id:     poolData.id
+      name:   poolData.name
+      type:   poolData.type
+      status: poolData.status
+
+  DiskarrayModel
