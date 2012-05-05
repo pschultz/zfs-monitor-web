@@ -1,7 +1,7 @@
 var __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(function() {
+define(['socket-io'], function(socket) {
   var DiskModel;
   DiskModel = (function(_super) {
 
@@ -25,6 +25,15 @@ define(function() {
         size: poolData.size,
         deviceId: poolData.name
       };
+    };
+
+    DiskModel.prototype.initialize = function() {
+      var self;
+      DiskModel.__super__.initialize.call(this);
+      self = this;
+      return socket.on("disk:" + this.id + ":change", function(data) {
+        return self.set(DiskModel.prototype.convertMonitorData(data));
+      });
     };
 
     return DiskModel;

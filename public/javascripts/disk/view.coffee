@@ -1,7 +1,9 @@
-define ->
+define ['zpool/model'], (ZPool) ->
   class DiskView extends Backbone.View
     initialize: ->
       self = @
+
+      @model.on 'change', @render
       @model.collection.on 'remove', (disk) ->
         self.remove() if disk.cid == self.model.cid
 
@@ -9,10 +11,12 @@ define ->
       template = $ "#disk-tmpl"
       data = @model.toJSON()
       data.size = humanReadableBytes data.size
-      data.type = data.type || '&nbsp;'
+
       html = template.tmpl data
       $(@el).html html
-      $(@el).addClass @model.get('status')
+      $(@el)
+        .removeClass(ZPool::statusList.join ' ')
+        .addClass @model.get('status')
       @el
 
   DiskView
