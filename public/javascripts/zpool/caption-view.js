@@ -38,8 +38,7 @@ define(['zpool/model', 'diskarray/special-view'], function(ZPool, SpecialDiskarr
     };
 
     ZPoolCaptionView.prototype.onChangeStatus = function() {
-      this.$(".status").text(this.model.get('status'));
-      return this.$("h1").removeClass(ZPool.prototype.statusList.join(' ')).addClass(this.model.get('status'));
+      return this.$(".status").text(this.model.get('status')).removeClass(ZPool.prototype.statusList.join(' ')).addClass(this.model.get('status'));
     };
 
     ZPoolCaptionView.prototype.renderDiskarray = function(diskarray) {

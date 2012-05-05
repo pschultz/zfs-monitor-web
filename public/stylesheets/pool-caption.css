@@ -1,11 +1,13 @@
 /* line 2, ../../src/public/stylesheets/pool-caption.sass */
-.pool-caption h1 {
+.pool-caption header {
+  text-align: center;
+}
+/* line 4, ../../src/public/stylesheets/pool-caption.sass */
+.pool-caption h1.status {
   font-size: 125%;
+  line-height: 125%;
   border-radius: 0.3em;
   padding: 0.4em;
   margin-bottom: 1em;
-}
-/* line 7, ../../src/public/stylesheets/pool-caption.sass */
-.pool-caption h1 .status {
-  float: right;
+  text-align: center;
 }

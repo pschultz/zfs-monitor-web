@@ -17,29 +17,29 @@ define(['zpool/model', 'zpool/view', 'socket-io'], function(ZPool, ZPoolView, so
     size = Math.round(size * 100) / 100;
     return "" + size + " " + suffix + "B";
   };
-  socket.on('*', function(event, data) {
-    return console.log(arguments);
-  });
   socket.emit('snapshot');
-  return socket.on('snapshot', function(snapshot) {
-    var i, poolData, zpool, zpoolView, _len, _ref, _results;
+  return socket.once('snapshot', function(snapshot) {
+    var cyclePool, i, poolData, poolViews, zpool, zpoolView, _len, _ref;
     if (!((snapshot.zpools != null) && snapshot.zpools.length)) return;
+    poolViews = [];
     _ref = snapshot.zpools;
-    _results = [];
     for (i = 0, _len = _ref.length; i < _len; i++) {
       poolData = _ref[i];
-      console.log(poolData);
       window.zpool = zpool = ZPool.prototype.createFromMonitorData(poolData);
       zpoolView = new ZPoolView({
         model: zpool,
         "class": $("pool")
       });
-      if (i === 1) {
-        _results.push($("#root").html(zpoolView.render()));
-      } else {
-        _results.push(void 0);
-      }
+      poolViews.push(zpoolView);
     }
-    return _results;
+    cyclePool = function() {
+      var v;
+      v = poolViews.shift();
+      $(v.el).detach();
+      poolViews.push(v);
+      return $("#root").html(poolViews[0].render());
+    };
+    cyclePool();
+    return setInterval(cyclePool, 5000);
   });
 });

@@ -1,18 +1,17 @@
 /* line 1, ../../src/public/stylesheets/disks.sass */
 .disk {
-  border: 1px solid #202223;
   border-radius: 0.25em;
 }
-/* line 5, ../../src/public/stylesheets/disks.sass */
+/* line 4, ../../src/public/stylesheets/disks.sass */
 .disk .id, .disk .type, .disk .size {
   float: left;
   white-space: nowrap;
 }
-/* line 9, ../../src/public/stylesheets/disks.sass */
+/* line 8, ../../src/public/stylesheets/disks.sass */
 .disk .id {
   width: 41%;
 }
-/* line 12, ../../src/public/stylesheets/disks.sass */
+/* line 11, ../../src/public/stylesheets/disks.sass */
 .disk .size {
   text-align: right;
   float: right;

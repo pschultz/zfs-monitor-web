@@ -3,7 +3,7 @@
   line-height: 1.5em;
   height: 1.5em;
   padding: 0 0.3em;
-  margin-bottom: 0.1em;
+  margin-bottom: 0.2em;
 }
 
 /* line 8, ../../src/public/stylesheets/diskarray.sass */
@@ -13,13 +13,18 @@
 /* line 10, ../../src/public/stylesheets/diskarray.sass */
 .diskarrays .disk {
   font-size: 28px;
+  line-height: 1em;
+  border-radius: 0.3em;
+  padding: 0.4em;
+  height: 1em;
+  box-sizing: content-box;
 }
-/* line 12, ../../src/public/stylesheets/diskarray.sass */
+/* line 17, ../../src/public/stylesheets/diskarray.sass */
 .diskarrays .type {
   display: none;
 }
 
-/* line 15, ../../src/public/stylesheets/diskarray.sass */
+/* line 20, ../../src/public/stylesheets/diskarray.sass */
 .diskarray.widget header small {
   float: right;
 }

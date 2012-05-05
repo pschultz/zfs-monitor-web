@@ -20,8 +20,8 @@ define ['zpool/model', 'diskarray/special-view'], (ZPool, SpecialDiskarrayView) 
       @$(".name").text(@model.get 'name')
 
     onChangeStatus: =>
-      @$(".status").text(@model.get 'status')
-      @$("h1")
+      @$(".status")
+        .text(@model.get 'status')
         .removeClass(ZPool::statusList.join ' ')
         .addClass(@model.get 'status')
 

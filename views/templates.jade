@@ -3,11 +3,10 @@ script#zpool-tmpl(type="text/x-jquery-tmpl")
 
 script#zpool-caption-tmpl(type="text/x-jquery-tmpl")
   article
-    header &nbsp;
+    header 
+      h1 ${name}
     .content
-      h1
-        span.name   ${name}:&nbsp;
-        span.status ${status}
+      h1.status ${status}
       .special-disks
     footer
       code zpool status

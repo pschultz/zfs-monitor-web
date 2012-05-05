@@ -15,21 +15,29 @@ define [ 'zpool/model', 'zpool/view', 'socket-io' ], (ZPool, ZPoolView, socket) 
     size = Math.round(size * 100) / 100
     "#{size} #{suffix}B"
 
-  socket.on '*', (event, data) ->
-    console.log arguments
-
   socket.emit 'snapshot'
 
-  socket.on 'snapshot', (snapshot) ->
+  socket.once 'snapshot', (snapshot) ->
     return unless snapshot.zpools? && snapshot.zpools.length
 
-    for poolData, i in snapshot.zpools
-      console.log poolData
+    poolViews = []
 
+    for poolData, i in snapshot.zpools
       window.zpool = zpool = ZPool::createFromMonitorData poolData
 
       zpoolView = new ZPoolView
         model: zpool
         class: $("pool")
 
-      $("#root").html zpoolView.render() if i is 1
+      poolViews.push zpoolView
+
+    cyclePool = ->
+      v = poolViews.shift()
+      $(v.el).detach()
+      poolViews.push v
+      $("#root").html poolViews[0].render()
+
+    #$("#root").html poolViews[1].render()
+
+    cyclePool()
+    setInterval cyclePool, 5000
