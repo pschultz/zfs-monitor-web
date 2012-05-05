@@ -14,10 +14,12 @@ define(function() {
       Router.__super__.constructor.apply(this, arguments);
     }
 
+    Router.prototype.timePerPool = 30000;
+
     Router.prototype.initialize = function() {
       this.view = null;
       this.pools = [];
-      return this.interval = setInterval(this._rotate, 5000);
+      return this.interval = 0;
     };
 
     Router.prototype.routes = {
@@ -28,10 +30,7 @@ define(function() {
     Router.prototype.pool = function(name) {
       var self;
       if (name == null) name = '';
-      if (!name.length && !this.interval) {
-        this.interval = setInterval(this._rotate, 5000);
-        return;
-      }
+      if (!name.length) return this._rotate();
       self = this;
       return _.each(this.pools, function(view) {
         if (view.model.get('name') !== name) return;
@@ -44,7 +43,10 @@ define(function() {
     Router.prototype._rotate = function() {
       if (!this.pools.length) return;
       this._render(this.pools.shift());
-      return this.pools.push(this.view);
+      this.pools.push(this.view);
+      if (!this.interval) {
+        return this.interval = setInterval(this._rotate, this.timePerPool);
+      }
     };
 
     Router.prototype._render = function(view) {

@@ -1,18 +1,17 @@
 define ->
   class Router extends Backbone.Router
+    timePerPool: 30000
     initialize: ->
       @view = null
       @pools = []
-      @interval = setInterval @_rotate, 5000
+      @interval = 0
 
     routes:
       'pool/:pool': 'pool'
       'pool':       'pool'
 
     pool: (name = '') =>
-      if not name.length and not @interval
-        @interval = setInterval @_rotate, 5000
-        return
+      return @_rotate() unless name.length
 
       self = @
       _.each @pools, (view) ->
@@ -25,6 +24,8 @@ define ->
       return unless @pools.length
       @_render @pools.shift()
       @pools.push @view
+
+      @interval = setInterval @_rotate, @timePerPool unless @interval
 
     _render: (view) ->
         $(@view.el).detach() if @view?
