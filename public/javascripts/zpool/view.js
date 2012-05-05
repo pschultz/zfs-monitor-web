@@ -29,8 +29,8 @@ define(['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zf
       html = template.tmpl(this.model.toJSON());
       $(this.el).html(html);
       this.renderCaption();
-      this.model.get('diskArrays').each(this.renderDiskarray);
       this.renderIostats();
+      this.model.get('diskArrays').each(this.renderDiskarray);
       this.renderScans();
       this.renderFilesystems();
       setTimeout(function() {
@@ -58,7 +58,7 @@ define(['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zf
         id: diskarray.cid,
         className: 'diskarray widget c1 r1'
       });
-      return this.$(".diskarrays").append(view.render());
+      return this.$(".iostats").before(view.render());
     };
 
     ZPoolView.prototype.renderIostats = function() {

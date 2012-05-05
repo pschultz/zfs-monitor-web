@@ -67,11 +67,17 @@ define(['socket-io', 'dataset/model', 'diskarray/model', 'diskarray/collection',
       socket.on("pool:" + this.id + ":scan:*:removed", function(scan) {
         return self.removeFromCollection(scan, 'scans');
       });
+      socket.on("pool:" + this.id + ":diskarray:*:removed", function(array) {
+        return self.removeFromCollection(array, 'diskArrays');
+      });
       socket.on("pool:" + this.id + ":zfs:*:added", function(zfs) {
         return self.addToCollection(zfs, Zfs, 'filesystems');
       });
-      return socket.on("pool:" + this.id + ":scan:*:added", function(scan) {
+      socket.on("pool:" + this.id + ":scan:*:added", function(scan) {
         return self.addToCollection(scan, Scan, 'scans');
+      });
+      return socket.on("pool:" + this.id + ":diskarray:*:added", function(array) {
+        return self.addToCollection(array, Diskarray, 'diskArrays');
       });
     };
 
@@ -83,7 +89,7 @@ define(['socket-io', 'dataset/model', 'diskarray/model', 'diskarray/collection',
 
     ZPoolModel.prototype.removeFromCollection = function(model, attribute) {
       var collection;
-      collection = self.get(attribute);
+      collection = this.get(attribute);
       model = collection.get(model.id);
       if (model != null) return collection.remove(model);
     };

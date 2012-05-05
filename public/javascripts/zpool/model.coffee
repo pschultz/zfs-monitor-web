@@ -50,18 +50,20 @@ define [
       socket.on "pool:#{@id}:change", (data) ->
         self.set ZPoolModel::convertMonitorData data
 
-      socket.on "pool:#{@id}:zfs:*:removed",  (zfs)  -> self.removeFromCollection zfs,  'filesystems'
-      socket.on "pool:#{@id}:scan:*:removed", (scan) -> self.removeFromCollection scan, 'scans'
+      socket.on "pool:#{@id}:zfs:*:removed",       (zfs)   -> self.removeFromCollection zfs,   'filesystems'
+      socket.on "pool:#{@id}:scan:*:removed",      (scan)  -> self.removeFromCollection scan,  'scans'
+      socket.on "pool:#{@id}:diskarray:*:removed", (array) -> self.removeFromCollection array, 'diskArrays'
 
-      socket.on "pool:#{@id}:zfs:*:added",  (zfs)  -> self.addToCollection zfs,  Zfs,  'filesystems'
-      socket.on "pool:#{@id}:scan:*:added", (scan) -> self.addToCollection scan, Scan, 'scans'
+      socket.on "pool:#{@id}:zfs:*:added",       (zfs)   -> self.addToCollection zfs,   Zfs,       'filesystems'
+      socket.on "pool:#{@id}:scan:*:added",      (scan)  -> self.addToCollection scan,  Scan,      'scans'
+      socket.on "pool:#{@id}:diskarray:*:added", (array) -> self.addToCollection array, Diskarray, 'diskArrays'
 
     addToCollection: (model, klass, attribute) ->
       collection = @get attribute
       collection.add klass::createFromMonitorData model
 
     removeFromCollection: (model, attribute) ->
-      collection = self.get attribute
+      collection = @get attribute
       model = collection.get(model.id)
       collection.remove model if model?
 

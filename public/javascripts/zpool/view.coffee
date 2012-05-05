@@ -11,8 +11,8 @@ define ['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zf
       $(@el).html html
 
       @renderCaption()
-      @model.get('diskArrays').each @renderDiskarray
       @renderIostats()
+      @model.get('diskArrays').each @renderDiskarray
       @renderScans()
       @renderFilesystems()
       
@@ -41,7 +41,7 @@ define ['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zf
         id: diskarray.cid
         className: 'diskarray widget c1 r1'
 
-      @$(".diskarrays").append view.render()
+      @$(".iostats").before view.render()
 
     renderIostats: =>
       view = new IostatsView
