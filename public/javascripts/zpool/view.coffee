@@ -1,9 +1,9 @@
-define ['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zfs/filesystem-view'], (ZPoolCaptionView, DiskArrayView, IostatsView, ScanView, FilesystemView) ->
+define ['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zfs/filesystem-view'], (ZPoolCaptionView, DiskarrayView, IostatsView, ScanView, FilesystemView) ->
   class ZPoolView extends Backbone.View
     initialize: ->
       return unless @model
 
-      @model.get('diskArrays').on 'add', @renderDiskArray
+      @model.get('diskArrays').on 'add', @renderDiskarray
 
     render: =>
       template = $ "#zpool-tmpl"
@@ -11,10 +11,18 @@ define ['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zf
       $(@el).html html
 
       @renderCaption()
-      @model.get('diskArrays').each @renderDiskArray
+      @model.get('diskArrays').each @renderDiskarray
       @renderIostats()
       @renderScans()
       @renderFilesystems()
+      
+      # this fixes layouting and sizing problems with highcharts
+      # that occur when charts are rendered to elements that have
+      # not yet been attached to the dom
+
+      setTimeout ->
+        $(window).trigger('resize')
+      , 20
 
       @el
 
@@ -25,8 +33,8 @@ define ['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zf
         className: 'widget head r1'
       $(@el).prepend captionView.render()
 
-    renderDiskArray: (diskArray) =>
-      view = new DiskArrayView
+    renderDiskarray: (diskArray) =>
+      view = new DiskarrayView
         model: diskArray
         tagName: 'div'
         id: @model.cid
