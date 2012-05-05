@@ -13,6 +13,10 @@ define ['zpool/model', 'disk/view'], (ZPool, DiskView) ->
       $(@el).html html
       @onChangeStatus()
 
+      @model.get('spareDisks').each @renderDisk
+      @model.get('logDisks')  .each @renderDisk
+      @model.get('cacheDisks').each @renderDisk
+
       @el
 
     onChangeName: =>

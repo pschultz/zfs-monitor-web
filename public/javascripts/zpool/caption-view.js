@@ -29,6 +29,9 @@ define(['zpool/model', 'disk/view'], function(ZPool, DiskView) {
       html = template.tmpl(this.model.toJSON());
       $(this.el).html(html);
       this.onChangeStatus();
+      this.model.get('spareDisks').each(this.renderDisk);
+      this.model.get('logDisks').each(this.renderDisk);
+      this.model.get('cacheDisks').each(this.renderDisk);
       return this.el;
     };
 
