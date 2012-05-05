@@ -8,7 +8,7 @@ body, .highcharts-title {
 /* line 10, ../../src/public/stylesheets/colors.sass */
 article {
   box-shadow: 0 0 10px 0 black;
-  background: #202223 none;
+  background: #202223 -webkit-linear-gradient(left top, #202223 38%, #1a1b1c 69%);
 }
 
 /* line 13, ../../src/public/stylesheets/colors.sass */
@@ -28,7 +28,7 @@ header, .content {
 }
 
 /* line 20, ../../src/public/stylesheets/colors.sass */
-.content, footer {
+article, .content, footer {
   border-top: 1px solid #303334;
 }
 

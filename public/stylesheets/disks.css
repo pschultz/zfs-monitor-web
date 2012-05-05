@@ -10,13 +10,9 @@
 }
 /* line 9, ../../src/public/stylesheets/disks.sass */
 .disk .id {
-  width: 35%;
+  width: 41%;
 }
 /* line 12, ../../src/public/stylesheets/disks.sass */
-.disk .type {
-  width: 30%;
-}
-/* line 15, ../../src/public/stylesheets/disks.sass */
 .disk .size {
   text-align: right;
   float: right;
