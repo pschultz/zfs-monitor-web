@@ -1,9 +1,9 @@
 define [
-  'dataset/model',
+  'socket-io', 'dataset/model',
   'diskarray/model', 'diskarray/collection',
   'disk/model', 'disk/collection',
   'zfs/model', 'zfs/collection',
-  'scan/model', 'scan/collection'], (Dataset, Diskarray, DiskarrayCollection, Disk, DiskCollection, Zfs, ZfsCollection, Scan, ScanCollection) ->
+  'scan/model', 'scan/collection'], (socket, Dataset, Diskarray, DiskarrayCollection, Disk, DiskCollection, Zfs, ZfsCollection, Scan, ScanCollection) ->
   class ZPoolModel extends Dataset
     createFromMonitorData: (poolData) ->
       data = ZPoolModel::convertMonitorData poolData
@@ -58,5 +58,28 @@ define [
       'AVAIL'  , 'UNAVAIL'
       'FAULTED', 'DEGRADED'
     ]
+
+    initialize: ->
+      super()
+      self = @
+
+      socket.on "pool:#{@id}:change", (data) ->
+        self.set ZPoolModel::convertMonitorData data
+
+      socket.on "pool:#{@id}:zfs:*:removed",  (zfs)  -> self.removeFromCollection zfs,  'filesystems'
+      socket.on "pool:#{@id}:scan:*:removed", (scan) -> self.removeFromCollection scan, 'scans'
+
+      socket.on "pool:#{@id}:zfs:*:added",  (zfs)  -> self.addToCollection zfs,  Zfs,  'filesystems'
+      socket.on "pool:#{@id}:scan:*:added", (scan) -> self.addToCollection scan, Scan, 'scans'
+
+    addToCollection: (model, klass, attribute) ->
+      collection = @get attribute
+      collection.add klass::createFromMonitorData model
+
+    removeFromCollection: (model, attribute) ->
+      collection = self.get attribute
+      model = collection.get(model.id)
+      collection.remove model if model?
+
 
   ZPoolModel

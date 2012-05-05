@@ -1,7 +1,7 @@
 var __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['dataset/model', 'diskarray/model', 'diskarray/collection', 'disk/model', 'disk/collection', 'zfs/model', 'zfs/collection', 'scan/model', 'scan/collection'], function(Dataset, Diskarray, DiskarrayCollection, Disk, DiskCollection, Zfs, ZfsCollection, Scan, ScanCollection) {
+define(['socket-io', 'dataset/model', 'diskarray/model', 'diskarray/collection', 'disk/model', 'disk/collection', 'zfs/model', 'zfs/collection', 'scan/model', 'scan/collection'], function(socket, Dataset, Diskarray, DiskarrayCollection, Disk, DiskCollection, Zfs, ZfsCollection, Scan, ScanCollection) {
   var ZPoolModel;
   ZPoolModel = (function(_super) {
 
@@ -70,6 +70,40 @@ define(['dataset/model', 'diskarray/model', 'diskarray/collection', 'disk/model'
     };
 
     ZPoolModel.prototype.statusList = ['ONLINE', 'OFFLINE', 'AVAIL', 'UNAVAIL', 'FAULTED', 'DEGRADED'];
+
+    ZPoolModel.prototype.initialize = function() {
+      var self;
+      ZPoolModel.__super__.initialize.call(this);
+      self = this;
+      socket.on("pool:" + this.id + ":change", function(data) {
+        return self.set(ZPoolModel.prototype.convertMonitorData(data));
+      });
+      socket.on("pool:" + this.id + ":zfs:*:removed", function(zfs) {
+        return self.removeFromCollection(zfs, 'filesystems');
+      });
+      socket.on("pool:" + this.id + ":scan:*:removed", function(scan) {
+        return self.removeFromCollection(scan, 'scans');
+      });
+      socket.on("pool:" + this.id + ":zfs:*:added", function(zfs) {
+        return self.addToCollection(zfs, Zfs, 'filesystems');
+      });
+      return socket.on("pool:" + this.id + ":scan:*:added", function(scan) {
+        return self.addToCollection(scan, Scan, 'scans');
+      });
+    };
+
+    ZPoolModel.prototype.addToCollection = function(model, klass, attribute) {
+      var collection;
+      collection = this.get(attribute);
+      return collection.add(klass.prototype.createFromMonitorData(model));
+    };
+
+    ZPoolModel.prototype.removeFromCollection = function(model, attribute) {
+      var collection;
+      collection = self.get(attribute);
+      model = collection.get(model.id);
+      if (model != null) return collection.remove(model);
+    };
 
     return ZPoolModel;
 
