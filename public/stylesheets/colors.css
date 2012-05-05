@@ -38,7 +38,7 @@ header, .content {
 }
 
 /* line 26, ../../src/public/stylesheets/colors.sass */
-.ONLINE {
+.ONLINE, .AVAIL {
   background: #77ab13 none;
 }
 

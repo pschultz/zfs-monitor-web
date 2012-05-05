@@ -12,9 +12,9 @@ define ['dataset/model', 'diskarray/collection'], (Dataset, DiskArrayCollection)
       scans:      null
 
     statusList: [
-      'ONLINE', 'OFFLINE'
-      'FAULTED', 'UNAVAIL'
-      'DEGRADED'
+      'ONLINE' , 'OFFLINE'
+      'AVAIL'  , 'UNAVAIL'
+      'FAULTED', 'DEGRADED'
     ]
 
   ZPoolModel
