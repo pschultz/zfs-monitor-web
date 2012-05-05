@@ -1,5 +1,5 @@
 script#zpool-tmpl(type="text/x-jquery-tmpl")
-  .diskarrays.widget-container
+  .diskarrays.widget-container.c4.r1
 
 script#zpool-caption-tmpl(type="text/x-jquery-tmpl")
   article
@@ -29,6 +29,14 @@ script#disk-tmpl(type="text/x-jquery-tmpl")
   .id ${deviceId}
   .type ${type}
   .size ${size}
+
+script#iostats-tmpl(type="text/x-jquery-tmpl")
+  article
+    header
+      h1 Pool IO
+    .content
+    footer
+      code zpool iostat
 
 
 script#pool-scan-tmpl(type="text/x-jquery-tmpl")
