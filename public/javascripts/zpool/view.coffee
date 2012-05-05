@@ -33,11 +33,12 @@ define ['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zf
         className: 'widget head r1'
       $(@el).prepend captionView.render()
 
-    renderDiskarray: (diskArray) =>
+    renderDiskarray: (diskarray) =>
+      return if diskarray.isSpecialArray()
       view = new DiskarrayView
-        model: diskArray
+        model: diskarray
         tagName: 'div'
-        id: @model.cid
+        id: diskarray.cid
         className: 'diskarray widget c1 r1'
 
       @$(".diskarrays").append view.render()

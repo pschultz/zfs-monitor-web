@@ -8,11 +8,12 @@ script#zpool-caption-tmpl(type="text/x-jquery-tmpl")
       h1
         span.name   ${name}:&nbsp;
         span.status ${status}
-      .spare.disks
-      .log.disks
-      .cache.disks
+      .special-disks
     footer
       code zpool status
+
+script#diskarray-special-tmpl(type="text/x-jquery-tmpl")
+  .disks
 
 script#diskarrays-tmpl(type="text/x-jquery-tmpl")
 

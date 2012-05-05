@@ -13,4 +13,3 @@ define ->
       deviceId: poolData.name
 
   DiskModel
-

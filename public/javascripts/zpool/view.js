@@ -49,12 +49,13 @@ define(['zpool/caption-view', 'diskarray/view', 'iostats/view', 'scan/view', 'zf
       return $(this.el).prepend(captionView.render());
     };
 
-    ZPoolView.prototype.renderDiskarray = function(diskArray) {
+    ZPoolView.prototype.renderDiskarray = function(diskarray) {
       var view;
+      if (diskarray.isSpecialArray()) return;
       view = new DiskarrayView({
-        model: diskArray,
+        model: diskarray,
         tagName: 'div',
-        id: this.model.cid,
+        id: diskarray.cid,
         className: 'diskarray widget c1 r1'
       });
       return this.$(".diskarrays").append(view.render());

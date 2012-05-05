@@ -25,24 +25,8 @@ define [
         zpool.get('scans').add scan
 
       for arrayData in poolData.diskArrays
-        disks = null
-        type = arrayData.type
-
-        specialDisks = /^(log|spare|cache)/
-
-        if specialDisks.test type
-          [ nil, type ] = specialDisks.exec type
-          disks = zpool.get "#{type}Disks"
-        else
-          type = ''
-          diskarray = Diskarray::createFromMonitorData arrayData
-          zpool.get('diskArrays').add diskarray
-          disks = diskarray.get 'disks'
-
-        for diskData, d in arrayData.disks
-          diskData.type = type
-          disk = Disk::createFromMonitorData diskData
-          disks.add disk
+        diskarray = Diskarray::createFromMonitorData arrayData
+        zpool.get('diskArrays').add diskarray
 
       zpool
 

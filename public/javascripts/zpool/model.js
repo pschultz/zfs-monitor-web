@@ -12,7 +12,7 @@ define(['socket-io', 'dataset/model', 'diskarray/model', 'diskarray/collection',
     }
 
     ZPoolModel.prototype.createFromMonitorData = function(poolData) {
-      var arrayData, d, data, disk, diskData, diskarray, disks, nil, scan, scanData, specialDisks, type, zfs, zfsData, zpool, _i, _j, _k, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4, _ref5;
+      var arrayData, data, diskarray, scan, scanData, zfs, zfsData, zpool, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3;
       data = ZPoolModel.prototype.convertMonitorData(poolData);
       data.diskArrays = new DiskarrayCollection();
       data.spareDisks = new DiskCollection();
@@ -36,25 +36,8 @@ define(['socket-io', 'dataset/model', 'diskarray/model', 'diskarray/collection',
       _ref3 = poolData.diskArrays;
       for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
         arrayData = _ref3[_k];
-        disks = null;
-        type = arrayData.type;
-        specialDisks = /^(log|spare|cache)/;
-        if (specialDisks.test(type)) {
-          _ref4 = specialDisks.exec(type), nil = _ref4[0], type = _ref4[1];
-          disks = zpool.get("" + type + "Disks");
-        } else {
-          type = '';
-          diskarray = Diskarray.prototype.createFromMonitorData(arrayData);
-          zpool.get('diskArrays').add(diskarray);
-          disks = diskarray.get('disks');
-        }
-        _ref5 = arrayData.disks;
-        for (d = 0, _len4 = _ref5.length; d < _len4; d++) {
-          diskData = _ref5[d];
-          diskData.type = type;
-          disk = Disk.prototype.createFromMonitorData(diskData);
-          disks.add(disk);
-        }
+        diskarray = Diskarray.prototype.createFromMonitorData(arrayData);
+        zpool.get('diskArrays').add(diskarray);
       }
       return zpool;
     };

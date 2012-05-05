@@ -1,12 +1,10 @@
-define ['zpool/model', 'disk/view'], (ZPool, DiskView) ->
+define ['zpool/model', 'diskarray/special-view'], (ZPool, SpecialDiskarrayView) ->
   class ZPoolCaptionView extends Backbone.View
     initialize: ->
       @model.on 'change:name', @onChangeName
       @model.on 'change:status', @onChangeStatus
 
-      @model.get('spareDisks').on 'add', @renderDisk
-      @model.get('logDisks')  .on 'add', @renderDisk
-      @model.get('cacheDisks').on 'add', @renderDisk
+      @model.get('diskArrays').on 'add', @renderDiskarray
 
     render: =>
       template = $ "#zpool-caption-tmpl"
@@ -14,9 +12,7 @@ define ['zpool/model', 'disk/view'], (ZPool, DiskView) ->
       $(@el).html html
       @onChangeStatus()
 
-      @model.get('spareDisks').each @renderDisk
-      @model.get('logDisks')  .each @renderDisk
-      @model.get('cacheDisks').each @renderDisk
+      @model.get('diskArrays').each @renderDiskarray
 
       @el
 
@@ -28,6 +24,17 @@ define ['zpool/model', 'disk/view'], (ZPool, DiskView) ->
       @$("h1")
         .removeClass(ZPool::statusList.join ' ')
         .addClass(@model.get 'status')
+
+    renderDiskarray: (diskarray) =>
+      return unless diskarray.isSpecialArray()
+
+      view = new SpecialDiskarrayView
+        model: diskarray
+        tagName: 'div'
+        id: diskarray.cid
+        className: 'diskarray'
+
+      @$(".special-disks").append view.render()
 
     renderDisk: (disk) =>
       type = disk.get 'type'
