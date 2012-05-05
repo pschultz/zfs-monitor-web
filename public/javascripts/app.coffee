@@ -11,13 +11,6 @@ define [
   giga = mega * 1024
   tera = giga * 1024
 
-  #socket = io.connect '/'
-  socket.on '*', (event, data) ->
-    console.log arguments
-
-
-  socket.emit 'snapshot'
-
   window.humanReadableBytes = (bytes) ->
     suffixes = ['K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']
     suffix = ''
@@ -29,22 +22,23 @@ define [
     size = Math.round(size * 100) / 100
     "#{size} #{suffix}B"
 
-  socket.on 'snapshot', (event, data) ->
+  socket.on '*', (event, data) ->
     console.log arguments
 
-    diskSizes = []
-    poolSize = 0
-    for r in [0..3]
-      diskSizes[r] = []
-      arraySize = Infinity
-      for d in [0..3]
-        size = (Math.random() * .5 + 1.5) * tera
-        diskSizes[r][d] = size
-        arraySize = Math.min(arraySize, size)
-      poolSize += arraySize * 3
+  socket.emit 'snapshot'
 
+  socket.on 'snapshot', (snapshot) ->
+    return unless snapshot.zpools? && snapshot.zpools.length
+
+    poolData = snapshot.zpools[3]
+    console.log poolData
 
     window.zpool = zpool = new ZPool
+      id:          poolData.id
+      name:        poolData.name
+      status:      poolData.status
+      size:        poolData.size
+      allocated:   poolData.allocated
       diskArrays:  new DiskArrayCollection()
       spareDisks:  new DiskCollection()
       logDisks:    new DiskCollection()
@@ -52,73 +46,45 @@ define [
       filesystems: new ZfsCollection()
       scans:       new ScanCollection()
 
-    for r in [0..3]
-      disks = new DiskCollection()
-      zpool.get('diskArrays').add new DiskArray
-        name: "raidz-#{r}"
-        disks: disks
-
-      for d in [0..3]
-        disks.add new Disk
-          deviceId: "c#{r}d#{d}"
-          size: diskSizes[r][d]
-
-    fsList = [
-      'tank'
-      'tank/exports'
-      'tank/exports/Audio'
-      'tank/exports/Audio/Books'
-      'tank/exports/Audio/Music'
-      'tank/exports/Downloads'
-      'tank/exports/Games'
-      'tank/exports/Video'
-      'tank/exports/Video/Movies'
-      'tank/exports/Video/TvShows'
-      'tank/exports/pxe'
-      'tank/homes'
-      'tank/homes/knox'
-      'tank/homes/knox.old'
-      'tank/homes/pschultz'
-      'tank/homes/xbmc'
-    ]
-
-    remainingPoolSize = poolSize
-
-    for fs in _.shuffle(fsList)
-      zfsSize = remainingPoolSize / (Math.random() * 5 + 3)
-      remainingPoolSize -= zfsSize
+    for zfsData in poolData.filesystems
       zpool.get('filesystems').add new Zfs
-        name: fs
-        size: zfsSize
+        id:   zfsData.id
+        name: zfsData.name
+        size: zfsData.size
 
-    zpool.get('logDisks').add new Disk
-      size: 120 * giga
-      type: 'log'
-      status: 'ONLINE'
-      deviceId: 'c5d1'
+    for scanData in poolData.scans
+      zpool.get('scans').add new Scan
+        id:       scanData.id
+        type:     scanData.type
+        eta:      scanData.eta
+        progress: scanData.progress
 
-    zpool.get('spareDisks').add new Disk
-      size: 1500 * giga
-      type: 'spare'
-      status: 'ONLINE'
-      deviceId: 'c5d0'
+    for arrayData, r in poolData.diskArrays
+      disks = null
+      type = arrayData.type
 
-    zpool.get('spareDisks').add new Disk
-      size: 1800 * giga
-      type: 'spare'
-      status: 'ONLINE'
-      deviceId: 'c6d0'
+      specialDisks = /^(log|spare|cache)/
 
-    zpool.get('scans').add new Scan
-      type: 'scrub'
-      eta: 182
-      progress: .99
+      if specialDisks.test type
+        [ nil, type ] = specialDisks.exec type
+        disks = zpool.get "#{type}Disks"
+      else
+        type = ''
+        disks = new DiskCollection()
+        zpool.get('diskArrays').add new DiskArray
+          id:     arrayData.id
+          name:   arrayData.name
+          type:   arrayData.type
+          status: arrayData.status
+          disks:  disks
 
-    zpool.set
-      name: 'tank'
-      status: 'ONLINE'
-      size:      poolSize
-      allocated: poolSize * Math.random()
+      for diskData, d in arrayData.disks
+        disks.add new Disk
+          id:       diskData.id
+          status:   diskData.status
+          type:     type
+          size:     diskData.size
+          deviceId: diskData.name
 
     zpoolView = new ZPoolView
       model: zpool
