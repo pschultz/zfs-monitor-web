@@ -5,6 +5,10 @@ define(['zpool/model', 'zpool/view', 'scan/model', 'scan/collection', 'disk/mode
   mega = kilo * 1024;
   giga = mega * 1024;
   tera = giga * 1024;
+  socket = io.connect('/');
+  socket.on('*', function(event, data) {
+    return console.log(arguments);
+  });
   window.humanReadableBytes = function(bytes) {
     var size, suffix, suffixes;
     suffixes = ['K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
@@ -35,19 +39,7 @@ define(['zpool/model', 'zpool/view', 'scan/model', 'scan/collection', 'disk/mode
     logDisks: new DiskCollection(),
     cacheDisks: new DiskCollection(),
     filesystems: new ZfsCollection(),
-    scans: new ScanCollection(),
-    status: 'ONLINE'
-  });
-  zpoolView = new ZPoolView({
-    model: zpool,
-    el: $("#pool")
-  });
-  zpoolView.render();
-  zpool.set({
-    name: 'tank',
-    status: 'ONLINE',
-    size: poolSize,
-    allocated: poolSize * Math.random()
+    scans: new ScanCollection()
   });
   for (r = 0; r <= 3; r++) {
     disks = new DiskCollection();
@@ -97,8 +89,18 @@ define(['zpool/model', 'zpool/view', 'scan/model', 'scan/collection', 'disk/mode
     eta: 182,
     progress: .99
   }));
-  socket = io.connect('/');
-  return socket.on('*', function(event, data) {
-    return console.log(arguments);
+  zpool.set({
+    name: 'tank',
+    status: 'ONLINE',
+    size: poolSize,
+    allocated: poolSize * Math.random()
   });
+  zpoolView = new ZPoolView({
+    model: zpool,
+    el: $("#pool")
+  });
+  zpoolView.render();
+  return setTimeout(function() {
+    return $(window).trigger('resize');
+  }, 20);
 });

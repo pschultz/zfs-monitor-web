@@ -9,6 +9,7 @@ define(function() {
     __extends(ZfsDistributionView, _super);
 
     function ZfsDistributionView() {
+      this.updateChart = __bind(this.updateChart, this);
       this.renderChart = __bind(this.renderChart, this);
       this.render = __bind(this.render, this);
       ZfsDistributionView.__super__.constructor.apply(this, arguments);
@@ -73,7 +74,7 @@ define(function() {
       if (!((this.chartContainer != null) && (this.chart != null))) {
         this.createChart();
       }
-      return this.updateChart();
+      return setTimeout(this.updateChart, 20);
     };
 
     ZfsDistributionView.prototype.createChart = function() {

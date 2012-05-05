@@ -9,6 +9,7 @@ define(function() {
     __extends(ZfsView, _super);
 
     function ZfsView() {
+      this.updateChart = __bind(this.updateChart, this);
       this.renderChart = __bind(this.renderChart, this);
       this.render = __bind(this.render, this);
       ZfsView.__super__.constructor.apply(this, arguments);
@@ -74,7 +75,7 @@ define(function() {
       if (!((this.chartContainer != null) && (this.chart != null))) {
         this.createChart();
       }
-      return this.updateChart();
+      return setTimeout(this.updateChart, 20);
     };
 
     ZfsView.prototype.createChart = function() {

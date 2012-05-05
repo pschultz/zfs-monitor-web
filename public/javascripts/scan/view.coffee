@@ -16,7 +16,7 @@ define ->
           fontFamily: 'Arial,Tahoma, Geneva, sans-serif'
         }
       },
-      colors: [ '#B5712E', '#058DC7'] 
+      colors: [ '#B5712E', '#058DC7']
       tooltip: { enabled: false },
       legend: { enabled: false },
       credits: { enabled: false },
@@ -72,7 +72,7 @@ define ->
       return unless @collection.length
 
       @createChart() unless @chartContainer? && @chart?
-      @updateChart()
+      setTimeout @updateChart, 20
 
     createChart: ->
       @chartContainer = @$("##{@chartId}")
@@ -86,7 +86,7 @@ define ->
 
       @chart = new Highcharts.Chart(chartDefinition)
 
-    updateChart: ->
+    updateChart: =>
       @chart.series[0].setData @getChartData()
 
     getChartData: ->

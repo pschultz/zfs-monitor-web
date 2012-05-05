@@ -11,6 +11,8 @@ define ['zpool/caption-view', 'diskarray/view', 'scan/view', 'zfs/filesystem-vie
       $(@el).html html
 
       @renderCaption()
+      @model.get('diskArrays').each @renderDiskArray
+
       @renderScans()
       @renderFilesystems()
 

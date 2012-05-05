@@ -54,7 +54,7 @@ define ->
       return unless @model.get('size')
 
       @createChart() unless @chartContainer? && @chart?
-      @updateChart()
+      setTimeout @updateChart, 20
 
     createChart: ->
       @chartContainer = @$("##{@chartId}")
@@ -68,7 +68,7 @@ define ->
 
       @chart = new Highcharts.Chart(chartDefinition)
 
-    updateChart: ->
+    updateChart: =>
       @chart.series[0].setData @getChartData()
       @chart.setTitle text: "Pool Size: #{humanReadableBytes @model.get('size')}"
 

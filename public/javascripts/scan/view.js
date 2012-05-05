@@ -9,6 +9,7 @@ define(function() {
     __extends(ScanView, _super);
 
     function ScanView() {
+      this.updateChart = __bind(this.updateChart, this);
       this.renderChart = __bind(this.renderChart, this);
       this.render = __bind(this.render, this);
       ScanView.__super__.constructor.apply(this, arguments);
@@ -100,7 +101,7 @@ define(function() {
       if (!((this.chartContainer != null) && (this.chart != null))) {
         this.createChart();
       }
-      return this.updateChart();
+      return setTimeout(this.updateChart, 20);
     };
 
     ScanView.prototype.createChart = function() {

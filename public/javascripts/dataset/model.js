@@ -25,7 +25,6 @@ define(function() {
     DatasetModel.prototype.initialize = function() {
       this.on('change:size', this.onChangeSize);
       this.on('change:allocated', this.onChangeAllocated);
-      this.on('change:free', this.onChangeFree);
       return this.calculateFree();
     };
 

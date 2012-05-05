@@ -10,6 +10,10 @@ define [
   giga = mega * 1024
   tera = giga * 1024
 
+  socket = io.connect '/'
+  socket.on '*', (event, data) ->
+    console.log arguments
+
   window.humanReadableBytes = (bytes) ->
     suffixes = ['K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']
     suffix = ''
@@ -40,19 +44,6 @@ define [
     cacheDisks:  new DiskCollection()
     filesystems: new ZfsCollection()
     scans:       new ScanCollection()
-    status: 'ONLINE'
-
-  zpoolView = new ZPoolView
-    model: zpool
-    el: $("#pool")
-
-  zpoolView.render()
-
-  zpool.set
-    name: 'tank'
-    status: 'ONLINE'
-    size:      poolSize
-    allocated: poolSize * Math.random()
 
   for r in [0..3]
     disks = new DiskCollection()
@@ -116,6 +107,22 @@ define [
     eta: 182
     progress: .99
 
-  socket = io.connect '/'
-  socket.on '*', (event, data) ->
-    console.log arguments
+  zpool.set
+    name: 'tank'
+    status: 'ONLINE'
+    size:      poolSize
+    allocated: poolSize * Math.random()
+
+  zpoolView = new ZPoolView
+    model: zpool
+    el: $("#pool")
+
+  zpoolView.render()
+
+  # this fixes layouting and sizing problems with highcharts
+  # that occur when charts are rendered to elements that have
+  # not yet been attached to the dom
+
+  setTimeout ->
+    $(window).trigger('resize')
+  , 20

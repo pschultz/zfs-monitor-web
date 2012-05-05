@@ -9,7 +9,6 @@ define ->
     initialize: ->
       @on 'change:size', @onChangeSize
       @on 'change:allocated', @onChangeAllocated
-      @on 'change:free', @onChangeFree
       @calculateFree()
 
     onChangeSize: =>

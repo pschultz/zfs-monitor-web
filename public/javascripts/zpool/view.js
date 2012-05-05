@@ -28,6 +28,7 @@ define(['zpool/caption-view', 'diskarray/view', 'scan/view', 'zfs/filesystem-vie
       html = template.tmpl(this.model.toJSON());
       $(this.el).html(html);
       this.renderCaption();
+      this.model.get('diskArrays').each(this.renderDiskArray);
       this.renderScans();
       this.renderFilesystems();
       return this.el;
