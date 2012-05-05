@@ -41,6 +41,14 @@ app.listen(3000, function() {
 
 Monitor = require('zfs-monitor');
 
+Monitor.on('monitor:start', function() {
+  return console.log('zfs-monitor: starting');
+});
+
+Monitor.on('monitor:stop', function() {
+  return console.log('zfs-monitor: stopping');
+});
+
 clients = {};
 
 io.sockets.on('connection', function(socket) {
@@ -50,6 +58,15 @@ io.sockets.on('connection', function(socket) {
     return socket.emit(arguments[0], arguments[1]);
   });
   Monitor.startMonitoring();
+  socket.on('snapshot', function() {
+    var send, snapshot;
+    send = function(snapshot) {
+      return socket.emit('snapshot', snapshot);
+    };
+    snapshot = Monitor.getSnapshot();
+    if (snapshot != null) return send(snapshot);
+    return Monitor.once('complete', send);
+  });
   return socket.on('disconnect', function() {
     delete clients[this.id];
     if (!Object.keys(clients).length) return Monitor.stopMonitoring();

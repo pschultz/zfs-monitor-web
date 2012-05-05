@@ -29,6 +29,9 @@ app.listen 3000, ->
 
 Monitor = require 'zfs-monitor'
 
+Monitor.on 'monitor:start', -> console.log 'zfs-monitor: starting'
+Monitor.on 'monitor:stop' , -> console.log 'zfs-monitor: stopping'
+
 clients = {}
 
 io.sockets.on 'connection', (socket) ->
@@ -39,6 +42,14 @@ io.sockets.on 'connection', (socket) ->
     socket.emit arguments[0], arguments[1]
 
   Monitor.startMonitoring()
+
+  socket.on 'snapshot', ->
+    send = (snapshot) -> socket.emit 'snapshot', snapshot
+
+    snapshot = Monitor.getSnapshot()
+
+    return send snapshot if snapshot?
+    Monitor.once 'complete', send
 
   socket.on 'disconnect', ->
     delete clients[this.id]
