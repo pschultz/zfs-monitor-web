@@ -71,8 +71,10 @@ define ->
       data = []
       poolSize = @model.get 'size'
       poolName = @model.get 'name'
+      nrOfFilesystems = @model.get('filesystems').length
       poolPattern = new RegExp("^#{poolName}/?")
       othersSize = 0
+      othersThreshold = nrOfFilesystems / 400
 
       @model.get('filesystems').each (zfs) ->
         zfsSize = zfs.get 'size'
@@ -81,7 +83,7 @@ define ->
 
         poolPercentage = zfsSize / poolSize
 
-        if poolPercentage < .03
+        if poolPercentage < othersThreshold and fsName isnt '@snapshots'
           othersSize += zfsSize
         else
           data.push [fsName, zfsSize],

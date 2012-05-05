@@ -93,19 +93,21 @@ define(function() {
     };
 
     ZfsDistributionView.prototype.getChartData = function() {
-      var data, othersSize, poolName, poolPattern, poolSize;
+      var data, nrOfFilesystems, othersSize, othersThreshold, poolName, poolPattern, poolSize;
       data = [];
       poolSize = this.model.get('size');
       poolName = this.model.get('name');
+      nrOfFilesystems = this.model.get('filesystems').length;
       poolPattern = new RegExp("^" + poolName + "/?");
       othersSize = 0;
+      othersThreshold = nrOfFilesystems / 400;
       this.model.get('filesystems').each(function(zfs) {
         var fsName, poolPercentage, zfsSize;
         zfsSize = zfs.get('size');
         fsName = zfs.get('name').replace(poolPattern, '');
         if (!fsName.length) fsName = '/';
         poolPercentage = zfsSize / poolSize;
-        if (poolPercentage < .03) {
+        if (poolPercentage < othersThreshold && fsName !== '@snapshots') {
           return othersSize += zfsSize;
         } else {
           return data.push([fsName, zfsSize]);
