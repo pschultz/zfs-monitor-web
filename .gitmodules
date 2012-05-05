@@ -1,0 +1,3 @@
+[submodule "node_modules/zfs-monitor"]
+	path = node_modules/zfs-monitor
+	url = git://github.com/pschultz/zfs-monitor.git
