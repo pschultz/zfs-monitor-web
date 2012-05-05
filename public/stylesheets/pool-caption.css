@@ -8,11 +8,3 @@
 #pool-caption h1 .status {
   float: right;
 }
-/* line 9, ../../src/public/stylesheets/pool-caption.sass */
-#pool-caption .disks {
-  margin-bottom: 0.2em;
-}
-/* line 12, ../../src/public/stylesheets/pool-caption.sass */
-#pool-caption .disk {
-  height: 1.5em;
-}
