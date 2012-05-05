@@ -92,11 +92,12 @@ define(function() {
       template = $("#iostats-tmpl");
       html = template.tmpl();
       $(this.el).html(html);
+      this.renderChart(this.chartConfig());
       return this.el;
     };
 
     IostatsView.prototype.renderChart = function() {
-      if (!this.collection.length) return;
+      return;
       if (!((this.chartContainer != null) && (this.chart != null))) {
         this.createChart();
       }

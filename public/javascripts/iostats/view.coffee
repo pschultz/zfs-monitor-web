@@ -64,12 +64,13 @@ define ->
       html = template.tmpl()
       $(@el).html html
 
-      #@renderChart(@chartConfig())
+      @renderChart(@chartConfig())
 
       @el
 
     renderChart: =>
-      return unless @collection.length
+      return
+      #unless @collection.length
 
       @createChart() unless @chartContainer? && @chart?
       setTimeout @updateChart, 20
