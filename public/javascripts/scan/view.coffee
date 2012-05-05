@@ -69,8 +69,6 @@ define ->
       @el
 
     renderChart: =>
-      return unless @collection.length
-
       @createChart() unless @chartContainer? && @chart?
       setTimeout @updateChart, 20
 

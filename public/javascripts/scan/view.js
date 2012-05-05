@@ -97,7 +97,6 @@ define(function() {
     };
 
     ScanView.prototype.renderChart = function() {
-      if (!this.collection.length) return;
       if (!((this.chartContainer != null) && (this.chart != null))) {
         this.createChart();
       }
