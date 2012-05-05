@@ -18,6 +18,7 @@ define(['zpool/model', 'disk/view'], function(ZPool, DiskView) {
 
     ZPoolCaptionView.prototype.initialize = function() {
       this.model.on('change:name', this.onChangeName);
+      this.model.on('change:status', this.onChangeStatus);
       this.model.get('spareDisks').on('add', this.renderDisk);
       this.model.get('logDisks').on('add', this.renderDisk);
       return this.model.get('cacheDisks').on('add', this.renderDisk);

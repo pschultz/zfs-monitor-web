@@ -2,6 +2,7 @@ define ['zpool/model', 'disk/view'], (ZPool, DiskView) ->
   class ZPoolCaptionView extends Backbone.View
     initialize: ->
       @model.on 'change:name', @onChangeName
+      @model.on 'change:status', @onChangeStatus
 
       @model.get('spareDisks').on 'add', @renderDisk
       @model.get('logDisks')  .on 'add', @renderDisk
