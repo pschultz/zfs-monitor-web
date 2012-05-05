@@ -1,4 +1,4 @@
-define [ 'zpool/model', 'zpool/view', 'socket-io' ], (ZPool, ZPoolView, socket) ->
+define [ 'zpool/model', 'zpool/view', 'router', 'socket-io' ], (ZPool, ZPoolView, Router, socket) ->
   kilo =        1024
   mega = kilo * 1024
   giga = mega * 1024
@@ -16,11 +16,11 @@ define [ 'zpool/model', 'zpool/view', 'socket-io' ], (ZPool, ZPoolView, socket) 
     "#{size} #{suffix}B"
 
   socket.emit 'snapshot'
-
   socket.once 'snapshot', (snapshot) ->
     return unless snapshot.zpools? && snapshot.zpools.length
 
-    poolViews = []
+    router = new Router()
+    zpoolView = null
 
     for poolData, i in snapshot.zpools
       window.zpool = zpool = ZPool::createFromMonitorData poolData
@@ -29,15 +29,7 @@ define [ 'zpool/model', 'zpool/view', 'socket-io' ], (ZPool, ZPoolView, socket) 
         model: zpool
         class: $("pool")
 
-      poolViews.push zpoolView
+      router.pools.push zpoolView
 
-    cyclePool = ->
-      v = poolViews.shift()
-      $(v.el).detach()
-      poolViews.push v
-      $("#root").html poolViews[0].render()
-
-    #$("#root").html poolViews[1].render()
-
-    cyclePool()
-    setInterval cyclePool, 5000
+    router._rotate()
+    Backbone.history.start()

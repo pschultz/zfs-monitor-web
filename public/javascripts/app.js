@@ -1,5 +1,5 @@
 
-define(['zpool/model', 'zpool/view', 'socket-io'], function(ZPool, ZPoolView, socket) {
+define(['zpool/model', 'zpool/view', 'router', 'socket-io'], function(ZPool, ZPoolView, Router, socket) {
   var giga, kilo, mega, tera;
   kilo = 1024;
   mega = kilo * 1024;
@@ -19,9 +19,10 @@ define(['zpool/model', 'zpool/view', 'socket-io'], function(ZPool, ZPoolView, so
   };
   socket.emit('snapshot');
   return socket.once('snapshot', function(snapshot) {
-    var cyclePool, i, poolData, poolViews, zpool, zpoolView, _len, _ref;
+    var i, poolData, router, zpool, zpoolView, _len, _ref;
     if (!((snapshot.zpools != null) && snapshot.zpools.length)) return;
-    poolViews = [];
+    router = new Router();
+    zpoolView = null;
     _ref = snapshot.zpools;
     for (i = 0, _len = _ref.length; i < _len; i++) {
       poolData = _ref[i];
@@ -30,16 +31,9 @@ define(['zpool/model', 'zpool/view', 'socket-io'], function(ZPool, ZPoolView, so
         model: zpool,
         "class": $("pool")
       });
-      poolViews.push(zpoolView);
+      router.pools.push(zpoolView);
     }
-    cyclePool = function() {
-      var v;
-      v = poolViews.shift();
-      $(v.el).detach();
-      poolViews.push(v);
-      return $("#root").html(poolViews[0].render());
-    };
-    cyclePool();
-    return setInterval(cyclePool, 5000);
+    router._rotate();
+    return Backbone.history.start();
   });
 });
