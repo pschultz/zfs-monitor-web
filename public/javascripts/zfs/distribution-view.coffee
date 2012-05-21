@@ -24,6 +24,8 @@ define ->
             enabled: true,
             color: 'white',
             connectorColor: 'white',
+            formatter: ->
+              return "#{@point.name} (#{window.humanReadableBytes @point.y})"
           },
         },
       },
