@@ -25,7 +25,7 @@ define ->
             color: 'white',
             connectorColor: 'white',
             formatter: ->
-              return "#{@point.name} (#{window.humanReadableBytes @point.y})"
+              return "#{@point.name}<br/>#{window.humanReadableBytes @point.y}"
           },
         },
       },
@@ -74,7 +74,7 @@ define ->
       poolSize = @model.get 'size'
       poolName = @model.get 'name'
       nrOfFilesystems = @model.get('filesystems').length
-      poolPattern = new RegExp("^#{poolName}/?")
+      poolPattern = new RegExp("^#{poolName}(/exports)?/?")
       othersSize = 0
       othersThreshold = nrOfFilesystems / 400
 

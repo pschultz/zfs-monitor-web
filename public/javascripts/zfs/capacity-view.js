@@ -49,7 +49,7 @@ define(function() {
               color: 'white',
               connectorColor: 'white',
               formatter: function() {
-                return "" + this.point.name + " (" + (window.humanReadableBytes(this.point.y)) + ")";
+                return "" + this.point.name + "<br/>" + (window.humanReadableBytes(this.point.y));
               }
             }
           }

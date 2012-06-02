@@ -29,7 +29,7 @@ define ->
             color: 'white',
             connectorColor: 'white',
             formatter: ->
-              return "#{@point.name} (#{window.humanReadableBytes @point.y})"
+              return "#{@point.name}<br/>#{window.humanReadableBytes @point.y}"
           },
         },
       },

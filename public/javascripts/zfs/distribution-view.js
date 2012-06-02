@@ -48,7 +48,7 @@ define(function() {
               color: 'white',
               connectorColor: 'white',
               formatter: function() {
-                return "" + this.point.name + " (" + (window.humanReadableBytes(this.point.y)) + ")";
+                return "" + this.point.name + "<br/>" + (window.humanReadableBytes(this.point.y));
               }
             }
           }
@@ -108,7 +108,7 @@ define(function() {
       poolSize = this.model.get('size');
       poolName = this.model.get('name');
       nrOfFilesystems = this.model.get('filesystems').length;
-      poolPattern = new RegExp("^" + poolName + "/?");
+      poolPattern = new RegExp("^" + poolName + "(/exports)?/?");
       othersSize = 0;
       othersThreshold = nrOfFilesystems / 400;
       this.model.get('filesystems').each(function(zfs) {
